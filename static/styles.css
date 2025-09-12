@@ -226,3 +226,8 @@ nav button {
         max-width: 95%;
     }
 }
+
+.gallery{
+    display: inline-block;
+    border: white;
+}
