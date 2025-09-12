@@ -1,0 +1,13 @@
+<!-- quotes/templates/quotes/quote.html -->
+{% extends 'quotes/base.html' %}
+
+        {% block content %}
+        <h1>Confucius Quotes</h1>
+        
+        <p>
+            {{quotes}}
+        </p>
+        <p>
+            <img src="{{images}}"/>
+        </p>
+        {% endblock %}

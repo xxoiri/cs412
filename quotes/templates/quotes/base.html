@@ -1,0 +1,27 @@
+<!-- quotes/templates/quotes/base.html -->
+{% load static %}
+<html>
+    <head>
+        <title>Quotes by Confucius</title>
+        <link rel="stylesheet" href="{% static 'styles.css' %}">
+    </head>
+    <body>
+        <nav>
+            <li><a href="{% url 'home' %}">Home</a></li>
+            <li><a href="{% url 'quote' %}">Quote</a></li>
+            <li><a href="{% url 'show_all' %}">Show All</a></li>
+            <li><a href="{% url 'about' %}">About</a></li>
+        </nav>
+        <!-- put page specific content here -->
+         {% block content %}
+         <h1>Confucius Quotes</h1>
+        
+         <p>
+             {{quotes}}
+         </p>
+         <p>
+             <img src="{{images}}"/>
+         </p>
+         {% endblock %}
+    </body>
+</html>

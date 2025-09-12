@@ -1,0 +1,21 @@
+<!-- quotes/templates/quotes/show_all.html -->
+{% extends 'quotes/base.html' %}
+
+    {% block content %}
+        <h1>All quotes by Confucius</h1>
+        
+        <ul>
+            {% for quote in quotes %}
+            <li>"{{ quote }}</li>
+            {% endfor %}
+        </ul>
+
+        <h2>All images of Confucius</h2>
+
+        <ul>
+            {% for image in images %}
+            <img src="{{ image }}"/>
+            {% endfor %}
+        </ul>
+
+        {% endblock %}
