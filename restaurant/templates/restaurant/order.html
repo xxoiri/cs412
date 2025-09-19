@@ -1,0 +1,44 @@
+<!-- restaurant/templates/restaurant/order.html -->
+{% extends 'restaurant/base.html' %}
+
+{% block content %}
+
+<div>
+    <h1>Place an Order</h1>
+
+    <form action="{% url 'confirmation' %}" method="post">
+        {% csrf_token %}
+        
+        <p>
+            <h3>Select your items:</h3>
+            {% for item in menu_items %}
+            <div><input type="checkbox" name="{{item}}">{{item}}</div>
+            {% endfor %}
+        </p>
+
+        <p>
+            <h3>Today's Special:</h3>
+            <div><input type="checkbox" name="{{specials}}">{{specials}}</div>
+        </p>
+
+        <p>
+            <h3>Special Instructions:</h3>
+            <div><textarea name="special_instructions" rows="3" cols="60"></textarea></div>
+        </p>
+
+        <p>
+            <h3>Customer Information</h3>
+
+            <div>Name:</div> <div><input name="name"></div>
+            <div>Phone:</div> <div><input name="phone"></div>
+            <div>Email:</div> <div><input name="email"></div>
+        </p>
+
+        <p>
+            <h3>Place your order!</h3>
+            <input type="Submit">
+        </p>
+    </form>
+</div>
+
+{% endblock %}
