@@ -23,5 +23,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path("quotes/", include("quotes.urls")), # ASSIGN 1
     path("restaurant/", include("restaurant.urls")), # ASSIGN 2
+    path("mini_insta/", include("mini_insta.urls")), # ASSIGN 3
     
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
