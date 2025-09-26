@@ -1,0 +1,52 @@
+<!-- mini_insta/show_profile.html -->
+
+{% extends 'mini_insta/base.html' %}
+
+{% block content %}
+<body>
+    <div class="container">
+        <div class="profile-header">
+            <img src="{{profile.profile_image_url}}" alt="{{ profile.username }}" class="profile-avatar">
+
+            <div class="profile-info">
+                <div class="username-section">
+                    <h1 class="username">@{{ profile.username }}</h1>
+                </div>
+            </div>
+
+            <div class="profile-stats">
+                <div class="stat">
+                    <span class ="stat-number">0</span>
+                    <div class="stat-label">followers</div>
+                </div>
+            </div>
+            <div class="stat">
+                <span class="stat-number">0</span>
+                <div class="stat-label">following</div>
+            </div>
+            <div class="bio-section">
+                <h2 class="full-name">{{profile.display_name}}</h2>
+                <p class="bio">{{ profile.bio_text }}</p>
+                <p class="join-date">Joined: {{ profile.join_date }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabs Navigation -->
+    <div class="profile-tabs">
+        <a href="#" class="tab active">POSTS</a>
+        <a href="#" class="tab">SAVED</a>
+        <a href="#" class="tab">TAGGED</a>
+    </div>
+    
+    <!-- Posts Grid -->
+    <div class="posts-grid">
+        <div class="no-posts">
+            <h3>No Posts Yet</h3>
+        </div>
+    </div>
+</body>
+
+
+
+{% endblock %}

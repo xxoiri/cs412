@@ -4,15 +4,24 @@
 <html>
    <head>
        <title>Mini Instagram</title>
-       <link rel="stylesheet" href="{% static 'styles.css' %}">
+       <link rel="stylesheet" href="{% static 'insta.css' %}">
    </head>
 
    <body>
        <nav>
-           <li><a href="{% url 'show_all' %}">Home Page</a></li>
+           <!-- <li><a href="{% url 'show_all_profiles' %}">Home Page</a></li> -->
        </nav>
         <!-- scriplet code -->
        {% block content %}
        {% endblock %}
+
+       <!-- footer -->
+        <footer class="site-footer">
+            <div class="footer-content">
+                <a href="{% url 'show_all_profiles' %}" class="footer-link">
+                    Home
+                </a>
+            </div>
+        </footer>
    </body>
 </html>

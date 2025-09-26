@@ -17,8 +17,5 @@ class ProfileView(DetailView):
     '''Display a single profile.'''
 
     model = Profile
-    template_name= 'mini_insta/profile.html'
-    context_object_name='profile' 
-
-class RandomProfileView(DetailView):
-    '''Display a single profile selected at random.'''
+    template_name= 'mini_insta/show_profile.html'
+    context_object_name='profile'
