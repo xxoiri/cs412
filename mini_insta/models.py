@@ -1,3 +1,4 @@
+# mini_insta/models.py
 from django.db import models
 
 # Create your models here.
@@ -14,3 +15,4 @@ class Profile(models.Model):
     def __str__(self):
         '''return a string representation of this model instance'''
         return f'{self.username} or 'f'{self.display_name}'
+    

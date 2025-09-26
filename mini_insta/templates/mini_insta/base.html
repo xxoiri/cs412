@@ -1,0 +1,18 @@
+<!-- mini_insta/templates/mini_insta/base.html -->
+{% load static %}
+
+<html>
+   <head>
+       <title>Mini Instagram</title>
+       <link rel="stylesheet" href="{% static 'styles.css' %}">
+   </head>
+
+   <body>
+       <nav>
+           <li><a href="{% url 'show_all' %}">Home Page</a></li>
+       </nav>
+        <!-- scriplet code -->
+       {% block content %}
+       {% endblock %}
+   </body>
+</html>
