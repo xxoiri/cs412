@@ -1,4 +1,5 @@
 # mini_insta/models.py
+# display all models for mini_insta app
 from django.db import models
 
 # Create your models here.
@@ -16,3 +17,34 @@ class Profile(models.Model):
         '''return a string representation of this model instance'''
         return f'{self.username} or 'f'{self.display_name}'
     
+    def get_all_posts(self):
+        '''a getter method to find and return all Posts for a given profile.'''
+        return Post.objects.filter(profile=self).order_by('-timestamp')
+    
+class Post(models.Model):
+    '''Model the data attributes of an Instagram Post.'''
+
+    # define the data attributes of the Post object
+    profile = models.ForeignKey(Profile, on_delete=models.DO_NOTHING, related_name='posts')
+    timestamp = models.DateTimeField(auto_now=True)
+    caption = models.TextField(blank=True)
+
+    def __str__(self):
+        '''return a string representation of this model instance.'''
+        return f'{self.profile} created a post at 'f'{self.timestamp}'
+    
+    def get_all_photos(self):
+        '''a getter method to find and return all Photos for a given Post.'''
+        return Photo.objects.filter(post=self)
+    
+class Photo(models.Model):
+    '''Model the data attributes of an image associated with a Post.'''
+
+    # define the data attributes of the Photo object
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='photos')
+    image_url = models.URLField(blank=True)
+    timestamp = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        '''return a string representation of this model instance.'''
+        return f'{self.post} created at 'f'{self.timestamp}'

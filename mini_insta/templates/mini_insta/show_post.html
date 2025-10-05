@@ -1,0 +1,28 @@
+<!-- mini_insta/show_post.html -->
+<!-- shows a single post within the user's profile -->
+{% extends 'mini_insta/base.html' %}
+
+{% block content %}
+<h1>Post Details</h1>
+
+    <!-- Post Info -->
+    <p><strong>Posted by:</strong> {{ post.profile.username }}</p>
+    <p><strong>Date:</strong> {{ post.timestamp|date:"F j, Y g:i A" }}</p>
+    {% if post.caption %}
+        <p><strong>Caption:</strong> {{post.caption }}</p>
+    {% endif %}
+
+    <ul>
+        <div class="gallery">
+            {% for photo in post.get_all_photos %}
+            <h2></h2>
+            <a href="{% url 'show_post' post.pk %}">
+                <img src="{{ photo.image_url }}" alt="post imgs" width="300"/>
+            </a>
+            {% empty %}
+                <p>No images for this post.</p>
+            {% endfor %}
+        </div>
+    </ul>
+
+{% endblock %}
