@@ -21,6 +21,12 @@
                 <a href="{% url 'show_all_profiles' %}" class="footer-link">
                     Home
                 </a>
+
+                {% if profile %}
+                <a href="{% url 'create_post' profile.pk %}" class="footer-link">
+                    Create Post
+                </a>
+                {% endif %}
             </div>
         </footer>
    </body>

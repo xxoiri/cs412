@@ -1,0 +1,54 @@
+<!-- mini_insta/create_post_form.html -->
+ <!--  -->
+
+{% extends 'mini_insta/base.html' %}
+
+{% block content %}
+
+ <div class="container"></div>
+    <div class="form-container">
+        <h1>Create New Post under @{{ profile.username }} </h1>
+        
+        <form method="POST" action="{% url 'create_post' profile.pk %}">
+            {% csrf_token %}
+            
+            <!-- Post Caption Field -->
+            <div class="form-group">
+                <label for="{{ form.caption.id_for_label }}">Caption:</label>
+                {{ form.caption }}
+                {% if form.caption.help_text %}
+                    <small class="help-text">{{ form.caption.help_text }}</small>
+                {% endif %}
+                {% if form.caption.errors %}
+                    <div class="error-list">
+                        {{ form.caption.errors }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Photo Image URL Field -->
+            <div class="form-group">
+                <label for="image_url">Image URL:</label>
+                <input type="url" 
+                       name="image_url" 
+                       id="image_url" 
+                       class="form-input"
+                       placeholder="https://example.com/image.jpg"
+                       required>
+                <small class="help-text">Enter the URL of the image you want to post</small>
+                {% if form.image_url.errors %}
+                    <div class="error-list">
+                        {{ form.image_url.errors }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Create Post</button>
+                <a href="{% url 'show_profile' profile.pk %}" class="btn btn-cancel">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

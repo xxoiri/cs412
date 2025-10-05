@@ -1,9 +1,10 @@
 # mini_insta/views.py
 # views for the mini_insta application
 
-from django.shortcuts import render
-from django.views.generic import ListView, DetailView
-from .models import Profile, Post
+from django.shortcuts import render, get_object_or_404
+from django.views.generic import ListView, DetailView, CreateView
+from django.urls import reverse_lazy
+from .models import Profile, Post, Photo
 
 # Create your views here.
 class ProfileListView(ListView):
@@ -26,3 +27,45 @@ class PostDetailView(DetailView):
     model = Post
     template_name='mini_insta/show_post.html'
     context_object_name='post'
+
+class CreatePostView(CreateView):
+    '''Display a form for post creation.'''
+
+    template_name= 'mini_insta/create_post_form.html'
+    model = Post
+    fields = ['caption']
+
+    def get_context_data(self, **kwargs):
+        '''Add the profile object to the template context.'''
+        context = super().get_context_data(**kwargs)
+        # Get the profile from URL parameter
+        profile_pk = self.kwargs['pk']
+        profile = get_object_or_404(Profile, pk=profile_pk)
+        context['profile'] = profile
+        return context
+    def form_valid(self, form):
+        '''handles the form submission - create post and associated photo(s)'''
+        
+        # Get the profile from URL parameter
+        profile_pk = self.kwargs['pk']
+        profile = get_object_or_404(Profile, pk=profile_pk)
+
+        # Set the profile for the post before saving
+        post = form.save(commit=False)
+        post.profile = profile
+        post.save()
+
+        # create the photo object with the image_url from the form 
+        image_url = self.request.POST.get('image_url')
+        if image_url:
+            Photo.objects.create(
+                post=post,
+                image_url=image_url
+            )
+
+        # redirect to the newly created post's detail page
+        return super().form_valid(form)
+    
+    def get_success_url(self):
+        '''Redirect to the newly created post's detail page.'''
+        return reverse_lazy('show_post', kwargs={'pk': self.object.pk})
