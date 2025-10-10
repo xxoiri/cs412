@@ -1,0 +1,24 @@
+<!-- mini_insta/update_post_form.html -->
+
+{% extends 'mini_insta/base.html' %}
+
+{% block content %}
+
+<h3>Are you sure you want to update this post?</h3>
+
+<!-- form to submit the update request -->
+<form method="POST">
+    {% csrf_token %}
+    <div class="form-group">
+        <label>Caption:</label>
+        {{ form.caption }}
+    </div>
+    <input type="submit" value="Update">
+</form>
+
+<!-- form to cancel the update request -->
+<form action="{% url 'show_post' post.pk %}" method="GET">
+    <input type="submit" value="Cancel">
+</form>
+
+{% endblock %}

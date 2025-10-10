@@ -26,4 +26,8 @@
         </div>
     </ul>
 
+    <!-- Delete or Update Post -->
+     <a href="{% url 'delete_post' post.pk %}">Delete Post</a>
+     <a href="{% url 'update_post' post.pk %}">Update Post</a>
+
 {% endblock %}

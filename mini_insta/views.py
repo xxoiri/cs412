@@ -2,7 +2,7 @@
 # views for the mini_insta application
 
 from django.shortcuts import render, redirect, get_object_or_404
-from django.views.generic import ListView, DetailView, CreateView, UpdateView
+from django.views.generic import *
 from django.urls import reverse_lazy
 from .models import *
 from .forms import *
@@ -84,3 +84,24 @@ class UpdateProfileView(UpdateView):
     model = Profile
     form_class = UpdateProfileForm
     template_name = 'mini_insta/update_profile_form.html'
+
+class DeletePostView(DeleteView):
+    '''View class to delete a post on a profile.'''
+
+    model = Post
+    template_name = 'mini_insta/delete_post_form.html'
+
+    def get_success_url(self):
+        '''Return the URL to redirect to after a successful delete.'''
+        return reverse_lazy('show_profile', kwargs={'pk': self.object.profile.pk})
+    
+class UpdatePostView(UpdateView):
+    '''Display a form for handling the update to a post.'''
+
+    model = Post
+    form_class = UpdatePostForm
+    template_name = 'mini_insta/update_post_form.html'
+
+    def get_success_url(self):
+        '''Return the URL to redirect to after a successful update.'''
+        return reverse_lazy('show_post', kwargs={'pk': self.object.pk})
