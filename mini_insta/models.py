@@ -1,6 +1,7 @@
 # mini_insta/models.py
 # display all models for mini_insta app
 from django.db import models
+from django.urls import reverse
 
 # Create your models here.
 class Profile(models.Model):
@@ -20,6 +21,10 @@ class Profile(models.Model):
     def get_all_posts(self):
         '''a getter method to find and return all Posts for a given profile.'''
         return Post.objects.filter(profile=self).order_by('-timestamp')
+    
+    def get_absolute_url(self):
+        '''a special method, returns URL corresponding to the profile that was updated.'''
+        return reverse('show_profile', kwargs={'pk':self.pk})
     
 class Post(models.Model):
     '''Model the data attributes of an Instagram Post.'''
@@ -57,3 +62,4 @@ class Photo(models.Model):
             return self.image_file.url
         else:
             return self.image_url
+        

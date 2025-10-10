@@ -1,0 +1,32 @@
+<!-- mini_insta/update_profile_form.html -->
+ <!-- form to update an existing profile. -->
+
+ {% extends 'mini_insta/base.html' %}
+
+ {% block content %}
+ <h1>Update @{{ profile.username }}</h1>
+
+<form action="{% url 'update_profile' profile.pk %}" method="POST" 
+      enctype="multipart/form-data">
+
+    {% csrf_token %}
+
+    <div class="form-group">
+        <label>Display Name:</label>
+        {{ form.display_name }}
+
+        <label>Bio Text:</label>
+        {{ form.bio_text }}
+
+        <label>Profile Image URL:</label>
+        {{ form.profile_image_url }}
+    </div>
+
+    <input type="submit" name="submit" value="Update">
+</form>
+
+<form action="{% url 'show_profile' profile.pk %}" method="GET">
+    <input type="submit" value="Cancel">
+</form>
+
+ {% endblock %}

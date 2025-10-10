@@ -1,5 +1,5 @@
 # mini_insta/forms.py
-# form to create a post
+# forms to edit models within the database.
 
 from django import forms
 from .models import *
@@ -13,3 +13,11 @@ class CreatePostForm(forms.ModelForm):
         model = Post
         # data attributes of the Post class
         fields = ['caption']
+
+class UpdateProfileForm(forms.ModelForm):
+    '''a form to handle an update to a Profile.'''
+    
+    class Meta:
+        '''associate this form with a model from our database.'''
+        model = Profile
+        fields = ['display_name', 'profile_image_url', 'bio_text']

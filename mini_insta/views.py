@@ -2,9 +2,10 @@
 # views for the mini_insta application
 
 from django.shortcuts import render, redirect, get_object_or_404
-from django.views.generic import ListView, DetailView, CreateView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.urls import reverse_lazy
-from .models import Profile, Post, Photo
+from .models import *
+from .forms import *
 
 # Create your views here.
 class ProfileListView(ListView):
@@ -77,3 +78,9 @@ class CreatePostView(CreateView):
     def get_success_url(self):
         '''Redirect to the newly created post's detail page.'''
         return reverse_lazy('show_post', kwargs={'pk': self.object.pk})
+
+class UpdateProfileView(UpdateView):
+    '''Display a form for handling the update a profile.'''
+    model = Profile
+    form_class = UpdateProfileForm
+    template_name = 'mini_insta/update_profile_form.html'
