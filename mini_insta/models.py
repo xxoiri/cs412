@@ -42,9 +42,18 @@ class Photo(models.Model):
 
     # define the data attributes of the Photo object
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='photos')
-    image_url = models.URLField(blank=True)
+    image_url = models.URLField(blank=True) # image URL string
     timestamp = models.DateTimeField(auto_now=True)
+    image_file = models.ImageField(blank=True) # an image file
 
     def __str__(self):
         '''return a string representation of this model instance.'''
         return f'{self.post} created at 'f'{self.timestamp}'
+
+    def get_image_url(self):
+        '''accessor method that will return the URL to the image.
+            returns image_URL if it exists, else it returns image_file attribute.'''
+        if self.image_file:
+            return self.image_file.url
+        else:
+            return self.image_url

@@ -18,7 +18,7 @@
             {% for photo in post.get_all_photos %}
             <h2></h2>
             <a href="{% url 'show_post' post.pk %}">
-                <img src="{{ photo.image_url }}" alt="post imgs" width="300"/>
+                <img src="{{ photo.get_image_url }}" alt="post imgs" width="300"/>
             </a>
             {% empty %}
                 <p>No images for this post.</p>

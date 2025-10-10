@@ -1,7 +1,7 @@
 # mini_insta/views.py
 # views for the mini_insta application
 
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import ListView, DetailView, CreateView
 from django.urls import reverse_lazy
 from .models import Profile, Post, Photo
@@ -55,13 +55,21 @@ class CreatePostView(CreateView):
         post.profile = profile
         post.save()
 
-        # create the photo object with the image_url from the form 
-        image_url = self.request.POST.get('image_url')
-        if image_url:
+        # handle uploaded image files
+        files = self.request.FILES.getlist('files')
+        for file in files:
             Photo.objects.create(
                 post=post,
-                image_url=image_url
+                image_file=file
             )
+
+        # create the photo object with the image_url from the form 
+        # image_url = self.request.POST.get('image_file')
+        # if image_url:
+        #     Photo.objects.create(
+        #         post=post,
+        #         image_url=image_url
+        #     )
 
         # redirect to the newly created post's detail page
         return super().form_valid(form)

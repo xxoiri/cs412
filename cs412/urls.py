@@ -25,4 +25,6 @@ urlpatterns = [
     path("restaurant/", include("restaurant.urls")), # ASSIGN 2
     path("mini_insta/", include("mini_insta.urls")), # ASSIGN 3
     
-] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+] 
+urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

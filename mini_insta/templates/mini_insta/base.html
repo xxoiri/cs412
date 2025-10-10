@@ -19,12 +19,12 @@
         <footer class="site-footer">
             <div class="footer-content">
                 <a href="{% url 'show_all_profiles' %}" class="footer-link">
-                    Home
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSIC02bIuhLOYHHA0btsxc4THlcwRQJSwrnMw&s" width="32" height="32">
                 </a>
 
                 {% if profile %}
                 <a href="{% url 'create_post' profile.pk %}" class="footer-link">
-                    Create Post
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQkoxKFrM214HiJsJ13DqKYQSYIPBuHGqNFjg&s" width="32" height="32">
                 </a>
                 {% endif %}
             </div>

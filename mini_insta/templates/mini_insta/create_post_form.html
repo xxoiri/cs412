@@ -9,7 +9,9 @@
     <div class="form-container">
         <h1>Create New Post under @{{ profile.username }} </h1>
         
-        <form method="POST" action="{% url 'create_post' profile.pk %}">
+        <form method="POST" action="{% url 'create_post' profile.pk %}"
+            enctype="multipart/form-data">
+            
             {% csrf_token %}
             
             <!-- Post Caption Field -->
@@ -27,7 +29,7 @@
             </div>
 
             <!-- Photo Image URL Field -->
-            <div class="form-group">
+            <!-- <div class="form-group">
                 <label for="image_url">Image URL:</label>
                 <input type="url" 
                        name="image_url" 
@@ -41,7 +43,14 @@
                         {{ form.image_url.errors }}
                     </div>
                 {% endif %}
-            </div>
+            </div> -->
+
+            <!-- Photo Image Upload Field -->
+             <div class="form-data">
+                <label for="files">Upload Images: </label>
+                <input type="file" name="files" id="files" multiple class="form-input">
+                <small class="help-text">Select one or more images.</small>
+             </div>
 
             <div class="form-actions">
                 <button type="submit" class="btn btn-primary">Create Post</button>
