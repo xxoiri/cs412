@@ -1,5 +1,7 @@
 # mini_insta/admin.py
 # register models for admin usage
+# by Amy Ho, aho@bu.edu
+
 from django.contrib import admin
 
 # Register your models here.

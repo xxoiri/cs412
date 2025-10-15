@@ -1,4 +1,5 @@
 # mini_insta/urls.py
+# by Amy Ho, aho@bu.edu
 
 from django.urls import path
 from .views import * # ProfileListView, ProfileView, PostDetailView, CreatePostView

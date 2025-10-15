@@ -1,5 +1,6 @@
 # mini_insta/forms.py
 # forms to edit models within the database.
+# by Amy Ho, aho@bu.edu
 
 from django import forms
 from .models import *

@@ -1,5 +1,6 @@
 # mini_insta/models.py
 # display all models for mini_insta app
+# by Amy Ho, aho@bu.edu
 from django.db import models
 from django.urls import reverse
 

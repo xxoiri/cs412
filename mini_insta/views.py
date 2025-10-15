@@ -1,5 +1,6 @@
 # mini_insta/views.py
 # views for the mini_insta application
+# by Amy Ho, aho@bu.edu
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import *
