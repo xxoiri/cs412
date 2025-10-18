@@ -106,3 +106,15 @@ class UpdatePostView(UpdateView):
     def get_success_url(self):
         '''Return the URL to redirect to after a successful update.'''
         return reverse_lazy('show_post', kwargs={'pk': self.object.pk})
+    
+class ShowFollowersDetailView(DetailView):
+    '''View class to display followers for a profile.'''
+
+    model = Profile
+    template_name = 'mini_insta/show_followers.html'
+
+class ShowFollowingDetailView(DetailView):
+    '''View class to display following for a profile.'''
+
+    model = Profile
+    template_name = 'mini_insta/show_following.html'

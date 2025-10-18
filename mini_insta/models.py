@@ -24,8 +24,26 @@ class Profile(models.Model):
         return Post.objects.filter(profile=self).order_by('-timestamp')
     
     def get_absolute_url(self):
-        '''a special method, returns URL corresponding to the profile that was updated.'''
+        '''returns URL corresponding to the profile that was updated.'''
         return reverse('show_profile', kwargs={'pk':self.pk})
+    
+    def get_followers(self):
+        '''returns list of follower profiles.'''
+        followers = Follow.objects.filter(profile=self)
+        return [Follow.follower_profile for follow in followers]
+    
+    def get_num_followers(self):
+        '''returns the count of followers for this profile.'''
+        return Follow.objects.filter(profile=self).count()
+    
+    def get_following(self):
+        '''returns a list of Profiles that this profile is following.'''
+        following = Follow.objects.filter(follower_profile = self)
+        return [Follow.profile for follow in following]
+    
+    def get_num_following(self):
+        '''returns the count of how many profiles this profile is following.'''
+        return Follow.objects.filter(follower_profile=self).count()
     
 class Post(models.Model):
     '''Model the data attributes of an Instagram Post.'''
@@ -42,6 +60,10 @@ class Post(models.Model):
     def get_all_photos(self):
         '''a getter method to find and return all Photos for a given Post.'''
         return Photo.objects.filter(post=self)
+    
+    def get_all_comments(self):
+        '''find and return all comments for a post.'''
+        return Comment.objects.filter(post=self)
     
 class Photo(models.Model):
     '''Model the data attributes of an image associated with a Post.'''
@@ -64,3 +86,29 @@ class Photo(models.Model):
         else:
             return self.image_url
         
+class Follow(models.Model):
+
+    '''encapsulates the idea of an edge connecting two nodes. 
+        this relation will associate 2 profiles.'''
+    
+    # define the data attributes
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE,related_name='followed_by')
+    follower_profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='following')
+    timestamp = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        '''method to view Follow relationship as a string rep.'''
+        return f'{self.follower_profile} follows {self.profile}.'
+    
+class Comment(models.Model):
+    '''models a comment on a profile's post.'''
+
+    # define the data attributes
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='user_comments')
+    timestamp = models.DateTimeField(auto_now=True)
+    text = models.TextField(blank=True)
+
+    def __str__(self):
+        '''allows viewing as str representation.'''
+        return f'{self.profile} said {self.text} on the post: {self.post} at {self.timestamp}.'
