@@ -17,15 +17,29 @@
        {% endblock %}
 
        <!-- footer -->
-        <footer class="site-footer" style="width: 100%; padding: 20px 0;">
+        <footer class="site-footer" style="width: 100%; padding: 20px 0; position:fixed; bottom:0; z-index: 1000; background-color: white;">
             <div class="footer-content" style="display: flex; justify-content: center; align-items: center; gap: 20px;">
-                <a href="{% url 'show_all_profiles' %}" class="footer-link">
+
+                {% if profile %}
+                <a href="{% url 'show_feed' profile.pk %}" class="footer-link">
                     <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSIC02bIuhLOYHHA0btsxc4THlcwRQJSwrnMw&s" width="32" height="32">
                 </a>
 
-                {% if profile %}
+                <a href="#">
+                    <img src="https://cdn-icons-png.flaticon.com/512/54/54481.png" width="32" height="32" alt="Search">
+                </a>
+
                 <a href="{% url 'create_post' profile.pk %}" class="footer-link">
                     <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQkoxKFrM214HiJsJ13DqKYQSYIPBuHGqNFjg&s" width="32" height="32">
+                </a>
+
+                <a href="{% url 'show_profile' profile.pk %}">
+                    <img src="{{ profile.profile_image_url }}" alt="{{ profile.username }}" width="40" height="40">
+                </a>
+
+                {% else %}
+                <a href="{% url 'show_all_profiles' %}" class="footer-link">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSIC02bIuhLOYHHA0btsxc4THlcwRQJSwrnMw&s" width="32" height="32">
                 </a>
                 {% endif %}
             </div>

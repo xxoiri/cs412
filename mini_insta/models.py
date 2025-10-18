@@ -45,6 +45,13 @@ class Profile(models.Model):
         '''returns the count of how many profiles this profile is following.'''
         return Follow.objects.filter(follower_profile=self).count()
     
+    def get_post_feed(self):
+        '''shows post for each of the profiles being followed by a given user with 
+        the most recent at the top.'''
+        following_profiles = self.get_following()
+        posts = Post.objects.filter(profile__in=following_profiles).order_by('-timestamp')
+        return posts
+    
 class Post(models.Model):
     '''Model the data attributes of an Instagram Post.'''
 

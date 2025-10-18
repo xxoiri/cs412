@@ -1,0 +1,273 @@
+<!-- mini_insta/show_feed.html -->
+<!-- by Amy Ho, aho@bu.edu -->
+
+{% extends 'mini_insta/base.html' %}
+
+{% block content %}
+<div class="container">
+    <!-- Header -->
+    <div class="feed-header">
+        <h1>Your Feed</h1>
+        <p class="feed-subtitle">Latest posts from the profiles {{ profile.username }} follows</p>
+    </div>
+
+    <!-- Post Feed -->
+    <div class="post-feed">
+        {% for post in posts %}
+        <div class="post-card">
+            <!-- Post Header with Profile Info -->
+            <div class="post-header">
+                <div class="profile-info">
+                    <a href="{% url 'show_profile' post.profile.pk %}" class="profile-link">
+                        {% if post.profile.profile_image_url %}
+                            <img src="{{ post.profile.profile_image_url }}" alt="{{ post.profile.username }}" class="profile-avatar-small">
+                        {% else %}
+                            <div class="profile-avatar-small placeholder">
+                                {{ post.profile.username|first|upper }}
+                            </div>
+                        {% endif %}
+                        <div class="profile-details">
+                            <strong class="username">@{{ post.profile.username }}</strong>
+                            {% if post.profile.display_name %}
+                                <span class="display-name">{{ post.profile.display_name }}</span>
+                            {% endif %}
+                        </div>
+                    </a>
+                </div>
+                <div class="post-time">
+                    {{ post.timestamp|timesince }} ago
+                </div>
+            </div>
+
+            <!-- First Photo of the Post -->
+            <div class="post-photos">
+                {% with post.get_all_photos.first as first_photo %}
+                    {% if first_photo %}
+                    <div class="post-photo">
+                        <a href="{% url 'show_post' post.pk %}">
+                        <img src="{{ first_photo.get_image_url }}" alt="Post image" class="post-image">
+                        </a>
+                    </div>
+                    {% endif %}
+                {% endwith %}
+            </div>
+            
+            <!-- Likes -->
+            <div class="post-stats">
+                <span class="likes-count">
+                    {{ post.get_likes.count }} like{{ post.get_likes.count|pluralize }}
+                </span>
+            </div>
+
+            <!-- Post Caption -->
+            {% if post.caption %}
+            <div class="post-caption">
+                <p><strong>@{{ post.profile.username }}</strong> {{ post.caption }}</p>
+            </div>
+            {% endif %}
+
+            <!-- Comments -->
+            <div class="post-stats">
+                {% for comment in post.get_all_comments|slice:":2" %}
+                <div class="comment-preview">
+                    <strong>@{{ comment.profile.username }}</strong>: {{ comment.text }}
+                </div>
+                {% endfor %}
+                
+                {% if post.get_all_comments.count > 2 %}
+                <div class="view-all-comments">
+                    <a href="{% url 'show_post' post.pk %}">View all {{ post.get_all_comments.count }} comments</a>
+                </div>
+                {% endif %}
+            </div>
+
+            <hr class="post-divider">
+        </div>
+        {% empty %}
+        <!-- Empty State -->
+        <div class="empty-feed">
+            <h3>Your feed is empty</h3>
+            <p>Start following some profiles to see their posts here!</p>
+            <a href="{% url 'show_all_profiles' %}" class="btn btn-primary">
+                Discover Profiles to Follow
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+/* Feed Styles */
+.feed-header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding: 20px 0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.feed-subtitle {
+    color: #666;
+    font-size: 1.1em;
+}
+
+/* Post Card */
+.post-card {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 25px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border: 1px solid #e0e0e0;
+}
+
+/* Post Header */
+.post-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.profile-info {
+    display: flex;
+    align-items: center;
+}
+
+.profile-link {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: inherit;
+}
+
+.profile-avatar-small {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 12px;
+    border: 2px solid #f0f0f0;
+}
+
+.profile-avatar-small.placeholder {
+    background: #007bff;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.username {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.display-name {
+    font-size: 12px;
+    color: #666;
+}
+
+.post-time {
+    font-size: 12px;
+    color: #999;
+}
+
+/* Post Photos */
+.post-image {
+    width: 100%;
+    max-height: 500px;
+    object-fit: contain;
+    border-radius: 4px;
+}
+
+/* Post Caption */
+.post-caption {
+    margin: 12px 0;
+    line-height: 1.4;
+}
+
+/* Post Stats */
+.post-stats {
+    margin: 10px 0;
+    font-size: 14px;
+    color: #666;
+}
+
+/* Comments Section */
+.comments-section {
+    margin: 15px 0;
+}
+
+.comment-preview {
+    font-size: 14px;
+    margin: 5px 0;
+    padding: 5px;
+    background: #f8f9fa;
+    border-radius: 4px;
+}
+
+.view-all-comments {
+    margin-top: 8px;
+}
+
+.view-all-comments a {
+    color: #666;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.view-all-comments a:hover {
+    color: #007bff;
+}
+
+/* Post Actions */
+.post-actions {
+    text-align: right;
+}
+
+.view-post-link {
+    color: #007bff;
+    text-decoration: none;
+    font-size: 14px;
+    padding: 5px 10px;
+    border: 1px solid #007bff;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.view-post-link:hover {
+    background-color: #007bff;
+    color: white;
+    text-decoration: none;
+}
+
+/* Empty State */
+.empty-feed {
+    text-align: center;
+    padding: 60px 20px;
+    color: #666;
+}
+
+.empty-feed h3 {
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+    color: white;
+    text-decoration: none;
+}
+</style>
+{% endblock %}
