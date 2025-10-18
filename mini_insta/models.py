@@ -30,7 +30,7 @@ class Profile(models.Model):
     def get_followers(self):
         '''returns list of follower profiles.'''
         followers = Follow.objects.filter(profile=self)
-        return [Follow.follower_profile for follow in followers]
+        return [follow.follower_profile for follow in followers]
     
     def get_num_followers(self):
         '''returns the count of followers for this profile.'''
@@ -39,7 +39,7 @@ class Profile(models.Model):
     def get_following(self):
         '''returns a list of Profiles that this profile is following.'''
         following = Follow.objects.filter(follower_profile = self)
-        return [Follow.profile for follow in following]
+        return [follow.profile for follow in following]
     
     def get_num_following(self):
         '''returns the count of how many profiles this profile is following.'''
@@ -55,7 +55,7 @@ class Post(models.Model):
 
     def __str__(self):
         '''return a string representation of this model instance.'''
-        return f'{self.profile} created a post at 'f'{self.timestamp}'
+        return f'{self.profile} created a post at {self.timestamp} captioned {self.caption}.'
     
     def get_all_photos(self):
         '''a getter method to find and return all Photos for a given Post.'''
@@ -64,6 +64,10 @@ class Post(models.Model):
     def get_all_comments(self):
         '''find and return all comments for a post.'''
         return Comment.objects.filter(post=self)
+    
+    def get_likes(self):
+        '''find and return all likes on a post.'''
+        return Like.objects.filter(post=self)
     
 class Photo(models.Model):
     '''Model the data attributes of an image associated with a Post.'''
@@ -112,3 +116,15 @@ class Comment(models.Model):
     def __str__(self):
         '''allows viewing as str representation.'''
         return f'{self.profile} said {self.text} on the post: {self.post} at {self.timestamp}.'
+    
+class Like(models.Model):
+    '''models the likes on a profile's post.'''
+
+    # data attributes
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="liked_post")
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="liked_by")
+    timestamp = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        '''returns string rep of when this like was created'''
+        return f'{self.profile} liked {self.post} at {self.timestamp}.'

@@ -4,7 +4,9 @@
  {% extends 'mini_insta/base.html' %}
 {% block content %}
 <div class="container">
-    <h1>All Followers</h1>
+    <h1><a href="{% url 'show_profile' profile.pk %}">
+        <img src="https://cdn-icons-png.flaticon.com/512/93/93634.png" width="40" height="40">
+    </a> Profiles @{{ profile.username }} is followed by:</h1>
 
     <div class="profiles-grid">
         {% for profile in profile.get_followers %}
@@ -16,7 +18,6 @@
             </div>
             <div class="profile-info">
                 <h2 class="username">@{{ profile.username }}</h2>
-                <p class="full-name">{{ profile.display_name }}</p>
             </div>
         </div>
         {% endfor %}

@@ -4,31 +4,47 @@
 {% extends 'mini_insta/base.html' %}
 
 {% block content %}
-<h1>Post Details</h1>
-
-    <!-- Post Info -->
-    <p><strong>Posted by:</strong> {{ post.profile.username }}</p>
-    <p><strong>Date:</strong> {{ post.timestamp|date:"F j, Y g:i A" }}</p>
-    {% if post.caption %}
-        <p><strong>Caption:</strong> {{post.caption }}</p>
-    {% endif %}
-
+    <h1><a href="{% url 'show_profile' post.profile.pk %}">
+        <img src="https://cdn-icons-png.flaticon.com/512/93/93634.png" width="40" height="40">
+    </a> Post Details</h1>
+    
     <!-- Actual Photos -->
     <ul>
-        <div class="gallery">
+        <div class="post">
             {% for photo in post.get_all_photos %}
             <h2></h2>
             <a href="{% url 'show_post' post.pk %}">
-                <img src="{{ photo.get_image_url }}" alt="post imgs" width="300"/>
+                <img src="{{ photo.get_image_url }}" alt="post imgs" width="100%"/>
             </a>
             {% empty %}
-                <p>No images for this post.</p>
+            <p>No images for this post.</p>
             {% endfor %}
         </div>
     </ul>
+    
+        <!-- Post Info -->
+        <p><strong>Posted by:</strong> {{ post.profile.username }}</p>
+        <p><strong>Date:</strong> {{ post.timestamp|date:"F j, Y g:i A" }}</p>
+        {% if post.caption %}
+            <p><strong>Caption:</strong> {{post.caption }}</p>
+        {% endif %}
 
     <!-- Delete or Update Post -->
      <a href="{% url 'delete_post' post.pk %}">Delete Post</a>
      <a href="{% url 'update_post' post.pk %}">Update Post</a>
+
+    <!-- Likes -->
+    {% if post.get_likes %}
+        {% if post.get_likes.count > 1 %}
+            <p><strong>{{ post.get_likes.count }}</strong> likes.</p>
+            {% endif %}
+        {% else %}
+            <p>No likes yet.</p>
+        {% endif %}
+
+     <!-- Comments -->
+    {% for comment in post.get_all_comments %}
+    <p><strong>{{ comment.profile.username }}: </strong> {{ comment.text }}</p>
+    {% endfor %}
 
 {% endblock %}
