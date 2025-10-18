@@ -25,7 +25,7 @@
                     <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSIC02bIuhLOYHHA0btsxc4THlcwRQJSwrnMw&s" width="32" height="32">
                 </a>
 
-                <a href="#">
+                <a href="{% url 'search' profile.pk %}">
                     <img src="https://cdn-icons-png.flaticon.com/512/54/54481.png" width="32" height="32" alt="Search">
                 </a>
 
@@ -34,7 +34,7 @@
                 </a>
 
                 <a href="{% url 'show_profile' profile.pk %}">
-                    <img src="{{ profile.profile_image_url }}" alt="{{ profile.username }}" width="40" height="40">
+                    <img src="{{ profile.profile_image_url }}" alt="{{ profile.username }}" width="32" height="32" style="border-radius: 50%; object-fit: cover;">
                 </a>
 
                 {% else %}

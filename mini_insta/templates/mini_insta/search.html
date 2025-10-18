@@ -1,0 +1,126 @@
+<!-- mini_insta/search.html -->
+<!-- by Amy Ho, aho@bu.edu -->
+
+{% extends 'mini_insta/base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="search-header">
+        <h1>Search</h1>
+        <p>Find profiles and posts</p>
+    </div>
+
+    <div class="search-form-container">
+        <form method="GET" action="{% url 'search' profile.pk %}" class="search-form">
+            <div class="search-input-group">
+                <input type="text" 
+                       name="query" 
+                       placeholder="Search for profiles or posts..." 
+                       class="search-input"
+                       {% if request.GET.query %}value="{{ request.GET.query }}"{% endif %}>
+                <button type="submit" class="search-button">
+                    Search
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+.search-header {
+    text-align: center;
+    margin-bottom: 40px;
+    padding: 20px 0;
+}
+
+.search-header h1 {
+    font-size: 2em;
+    margin-bottom: 10px;
+    color: #262626;
+}
+
+.search-header p {
+    color: #8e8e8e;
+    font-size: 1.1em;
+}
+
+.search-form-container {
+    max-width: 600px;
+    margin: 0 auto 40px auto;
+}
+
+.search-form {
+    width: 100%;
+}
+
+.search-input-group {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.search-input {
+    flex: 1;
+    padding: 12px 16px;
+    border: 1px solid #dbdbdb;
+    border-radius: 8px;
+    font-size: 16px;
+    background-color: #fafafa;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: #0095f6;
+    background-color: white;
+}
+
+.search-button {
+    padding: 12px 24px;
+    background-color: #0095f6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.search-button:hover {
+    background-color: #0081d6;
+}
+
+.search-tips {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+}
+
+.search-tips h3 {
+    margin-bottom: 15px;
+    color: #262626;
+}
+
+.search-tips ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.search-tips li {
+    margin-bottom: 8px;
+    padding-left: 20px;
+    position: relative;
+    color: #666;
+}
+
+.search-tips li:before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: #0095f6;
+}
+</style>
+{% endblock %}
