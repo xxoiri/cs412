@@ -2,6 +2,7 @@
 # by Amy Ho, aho@bu.edu
 
 from django.urls import path
+from django.contrib.auth import views as auth_views
 from .views import * # ProfileListView, ProfileView, PostDetailView, CreatePostView
 
 urlpatterns = [
@@ -16,4 +17,5 @@ urlpatterns = [
     path('profile/<int:pk>/following', ShowFollowingDetailView.as_view(), name="show_following"),
     path('profile/feed', PostFeedListView.as_view(), name="show_feed"),
     path('profile/search', SearchView.as_view(), name="search"),
+    path('login/', LoginView.asview)
 ]
