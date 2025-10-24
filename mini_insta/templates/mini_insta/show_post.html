@@ -30,8 +30,10 @@
         {% endif %}
 
     <!-- Delete or Update Post -->
+     {% if user.is_authenticated and user == post.profile.user %}
      <a href="{% url 'delete_post' post.pk %}">Delete Post</a>
      <a href="{% url 'update_post' post.pk %}">Update Post</a>
+     {% endif %}
 
     <!-- Likes -->
     {% if post.get_likes %}

@@ -8,6 +8,7 @@ from django.views.generic import *
 from django.urls import reverse_lazy
 from .models import *
 from .forms import *
+from .mixins import ProfileLoginRequiredMixin
 
 # Create your views here.
 class ProfileListView(ListView):
@@ -31,7 +32,7 @@ class PostDetailView(DetailView):
     template_name='mini_insta/show_post.html'
     context_object_name='post'
 
-class CreatePostView(CreateView):
+class CreatePostView(ProfileLoginRequiredMixin, CreateView):
     '''Display a form for post creation.'''
 
     template_name= 'mini_insta/create_post_form.html'
@@ -81,13 +82,13 @@ class CreatePostView(CreateView):
         '''Redirect to the newly created post's detail page.'''
         return reverse_lazy('show_post', kwargs={'pk': self.object.pk})
 
-class UpdateProfileView(UpdateView):
+class UpdateProfileView(ProfileLoginRequiredMixin, UpdateView):
     '''Display a form for handling the update a profile.'''
     model = Profile
     form_class = UpdateProfileForm
     template_name = 'mini_insta/update_profile_form.html'
 
-class DeletePostView(DeleteView):
+class DeletePostView(ProfileLoginRequiredMixin, DeleteView):
     '''View class to delete a post on a profile.'''
 
     model = Post
@@ -97,7 +98,7 @@ class DeletePostView(DeleteView):
         '''Return the URL to redirect to after a successful delete.'''
         return reverse_lazy('show_profile', kwargs={'pk': self.object.profile.pk})
     
-class UpdatePostView(UpdateView):
+class UpdatePostView(ProfileLoginRequiredMixin, UpdateView):
     '''Display a form for handling the update to a post.'''
 
     model = Post
@@ -120,7 +121,7 @@ class ShowFollowingDetailView(DetailView):
     model = Profile
     template_name = 'mini_insta/show_following.html'
 
-class PostFeedListView(ListView):
+class PostFeedListView(ProfileLoginRequiredMixin, ListView):
     '''View class to display list of posts.'''
 
     model = Profile
@@ -140,7 +141,7 @@ class PostFeedListView(ListView):
         context['profile'] = get_object_or_404(Profile, pk=profile_pk)
         return context
 
-class SearchView(ListView):
+class SearchView(ProfileLoginRequiredMixin, ListView):
     '''View class for searching Profiles and Posts.'''
     template_name = 'mini_insta/search_results.html'
     context_object_name = 'posts'

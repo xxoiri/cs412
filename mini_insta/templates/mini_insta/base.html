@@ -20,22 +20,29 @@
         <footer class="site-footer" style="width: 100%; padding: 20px 0; position:fixed; bottom:0; z-index: 1000; background-color: white;">
             <div class="footer-content" style="display: flex; justify-content: center; align-items: center; gap: 20px;">
 
-                {% if profile %}
-                <a href="{% url 'show_feed' profile.pk %}" class="footer-link">
+                {% if user.is_authenticated %}
+                    <p>Logged in as {{ user.username }}</p>
+                {% else %}
+                    <p>user is not logged in.</p>
+                {% endif %}
+
+                {% if user.is_authenticated and user == profile.user %}
+                <a href="{% url 'show_feed' %}" class="footer-link">
                     <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSIC02bIuhLOYHHA0btsxc4THlcwRQJSwrnMw&s" width="32" height="32">
                 </a>
 
-                <a href="{% url 'search' profile.pk %}">
+                <a href="{% url 'search' %}">
                     <img src="https://cdn-icons-png.flaticon.com/512/54/54481.png" width="32" height="32" alt="Search">
                 </a>
 
-                <a href="{% url 'create_post' profile.pk %}" class="footer-link">
+                <a href="{% url 'create_post' %}" class="footer-link">
                     <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQkoxKFrM214HiJsJ13DqKYQSYIPBuHGqNFjg&s" width="32" height="32">
                 </a>
-
+                <!-- {% if user == profile.admin %} -->
                 <a href="{% url 'show_profile' profile.pk %}">
                     <img src="{{ profile.profile_image_url }}" alt="{{ profile.username }}" width="32" height="32" style="border-radius: 50%; object-fit: cover;">
                 </a>
+                <!-- {% endif %} -->
 
                 {% else %}
                 <a href="{% url 'show_all_profiles' %}" class="footer-link">

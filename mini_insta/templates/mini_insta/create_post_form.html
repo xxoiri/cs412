@@ -9,7 +9,7 @@
     <div class="form-container">
         <h1>Create New Post under @{{ profile.username }} </h1>
         
-        <form method="POST" action="{% url 'create_post' profile.pk %}"
+        <form method="POST" action="{% url 'create_post' %}"
             enctype="multipart/form-data">
             
             {% csrf_token %}
