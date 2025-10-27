@@ -27,6 +27,18 @@ class ProfileView(DetailView):
     template_name= 'mini_insta/show_profile.html'
     context_object_name='profile'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        # If user is logged in, include their profile
+        if self.request.user.is_authenticated:
+            current_profile = self.request.user.profile_set.first()
+        else:
+            current_profile = None
+
+        context['current_profile'] = current_profile
+        return context
+
 class PostDetailView(DetailView):
     '''Display a single post.'''
 
