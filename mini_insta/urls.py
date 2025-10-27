@@ -19,4 +19,11 @@ urlpatterns = [
     path('profile/search', SearchView.as_view(), name="search"),
     path('login/', auth_views.LoginView.as_view(template_name='mini_insta/login.html'), name='login'),
     path('logout/', auth_views.LogoutView.as_view(template_name='mini_insta/logout.html'), name='logout'),
+    path('logout_confirmation/', TemplateView.as_view(template_name='mini_insta/logged_out.html'), name='logout_confirmation'),
+    path('create_profile/', CreateProfileView.as_view(), name='create_profile'),
+    path('profile/<int:pk>/follow', FollowView.as_view(), name='follow_profile'),
+    path('profile/<int:pk>/delete_follow', DeleteFollowView.as_view(), name='delete_follow'),
+    path('post/<int:pk>/like', LikeView.as_view(), name='like_post'),
+    path('post/<int:pk>/delete_like', DeleteLikeView.as_view(), name='delete_like'),
+
 ]

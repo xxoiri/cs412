@@ -1,52 +1,73 @@
 <!-- mini_insta/show_post.html -->
-<!-- shows a single post within the user's profile -->
  <!-- by Amy Ho, aho@bu.edu -->
 {% extends 'mini_insta/base.html' %}
 
 {% block content %}
-    <h1><a href="{% url 'show_profile' post.profile.pk %}">
-        <img src="https://cdn-icons-png.flaticon.com/512/93/93634.png" width="40" height="40">
-    </a> Post Details</h1>
-    
-    <!-- Actual Photos -->
-    <ul>
-        <div class="post">
-            {% for photo in post.get_all_photos %}
-            <h2></h2>
-            <a href="{% url 'show_post' post.pk %}">
-                <img src="{{ photo.get_image_url }}" alt="post imgs" width="100%"/>
+<div class="post-detail">
+    <div class="post-header">
+        <h2>
+            Post by 
+            <a href="{% url 'show_profile' post.profile.pk %}">
+                {{ post.profile.display_name }} (@{{ post.profile.username }})
             </a>
-            {% empty %}
-            <p>No images for this post.</p>
-            {% endfor %}
-        </div>
-    </ul>
+        </h2>
+        <p>{{ post.timestamp|date:"F d, Y g:i A" }}</p>
+    </div>
     
-        <!-- Post Info -->
-        <p><strong>Posted by:</strong> {{ post.profile.username }}</p>
-        <p><strong>Date:</strong> {{ post.timestamp|date:"F j, Y g:i A" }}</p>
-        {% if post.caption %}
-            <p><strong>Caption:</strong> {{post.caption }}</p>
-        {% endif %}
+    <div class="post-content">
+        <p>{{ post.caption }}</p>
+        
+        <!-- Show photos -->
+        {% for photo in post.get_all_photos %}
+            <img src="{{ photo.get_image_url }}" alt="Post image" style="max-width: 300px;">
+        {% endfor %}
+    </div>
+            
+    <!-- Like stats and actions -->
+    <div class="post-actions">
+        <p>Likes: {{ post.get_likes.count }}</p>
 
-    <!-- Delete or Update Post -->
-     {% if user.is_authenticated and user == post.profile.user %}
-     <a href="{% url 'delete_post' post.pk %}">Delete Post</a>
-     <a href="{% url 'update_post' post.pk %}">Update Post</a>
-     {% endif %}
-
-    <!-- Likes -->
-    {% if post.get_likes %}
-        {% if post.get_likes.count > 1 %}
-            <p><strong>{{ post.get_likes.count }}</strong> likes.</p>
+        <!-- Debug  -->
+        <!-- <p>User: {{ user.profile_set.first }}</p>
+        <p>Authenticated: {{ user.is_authenticated }}</p>
+        <p>Profile count: {{ user.profile_set.count }}</p>
+        <p>liked by: {{ post.get_likes }}</p>
+        {% if user.profile_set.first %}
+            <p>First profile: {{ user.profile_set.first.username }} (ID: {{ user.profile_set.first.pk }})</p>
+        {% endif %} -->
+        
+        {% if user.is_authenticated %}
+            {% if current_profile != post.profile %}
+                {% if is_liked %}
+                    <a href="{% url 'delete_like' post.pk %}" class="btn btn-unlike">Unlike</a>
+                {% else %}
+                    <a href="{% url 'like_post' post.pk %}" class="btn btn-like">Like</a>
+                {% endif %}
             {% endif %}
-        {% else %}
-            <p>No likes yet.</p>
         {% endif %}
+    
+    
+    </div>
 
-     <!-- Comments -->
-    {% for comment in post.get_all_comments %}
-    <p><strong>{{ comment.profile.username }}: </strong> {{ comment.text }}</p>
-    {% endfor %}
-
+        <!-- Edit/Delete for post owner -->
+        {% if user.is_authenticated and user == post.profile.user %}
+            <a href="{% url 'update_post' post.pk %}">Edit Post</a>
+            <a href="{% url 'delete_post' post.pk %}">Delete Post</a>
+        {% endif %}
+    </div>
+    
+    <!-- Comments section -->
+    <div class="comments">
+        <h3>Comments</h3>
+        {% for comment in post.get_all_comments %}
+            <div class="comment" style="border-left: 2px solid #ddd; padding-left: 10px; margin: 5px 0;">
+                <strong>{{ comment.profile.display_name }}</strong>
+                <small>{{ comment.timestamp|date:"M d, Y g:i A" }}</small>
+                <p>{{ comment.text }}</p>
+            </div>
+        {% empty %}
+            <p>No comments yet.</p>
+        {% endfor %}
+    </div>
+</div>
 {% endblock %}

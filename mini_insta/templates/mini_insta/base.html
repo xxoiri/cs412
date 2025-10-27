@@ -1,55 +1,69 @@
 <!-- mini_insta/templates/mini_insta/base.html -->
  <!-- by Amy Ho, aho@bu.edu -->
-{% load static %}
+ {% load static %}
 
-<html>
-   <head>
-       <title>Mini Instagram</title>
-       <link rel="stylesheet" href="{% static 'insta.css' %}">
-   </head>
-
-   <body>
-       <nav>
-           <!-- <li><a href="{% url 'show_all_profiles' %}">Home Page</a></li> -->
-       </nav>
-        <!-- scriplet code -->
-       {% block content %}
-       {% endblock %}
-
-       <!-- footer -->
-        <footer class="site-footer" style="width: 100%; padding: 20px 0; position:fixed; bottom:0; z-index: 1000; background-color: white;">
-            <div class="footer-content" style="display: flex; justify-content: center; align-items: center; gap: 20px;">
-
+ <html>
+    <head>
+        <title>Mini Instagram</title>
+        <link rel="stylesheet" href="{% static 'insta.css' %}">
+    </head>
+ 
+    <body>
+        <!-- header -->
+        <header class="site-header" style="width: 100%; padding: 20px 0; position:fixed; top:0; z-index: 1000; background-color: white; border-bottom: 1px solid #ddd;">
+            <div class="header-content" style="display: flex; justify-content: center; align-items: center; gap: 20px;">
                 {% if user.is_authenticated %}
-                    <p>Logged in as {{ user.username }}</p>
+                    <p style="margin: 0;">Logged in as <strong>{{ user.username }}</strong></p>
+                    <form method="post" action="{% url 'logout' %}" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" style="background: none; border: none; color: #007bff; cursor: pointer; text-decoration: underline; padding: 0;">Logout</button>
+                    </form>
                 {% else %}
-                    <p>user is not logged in.</p>
-                {% endif %}
-
-                {% if user.is_authenticated and user == profile.user %}
-                <a href="{% url 'show_feed' %}" class="footer-link">
-                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSIC02bIuhLOYHHA0btsxc4THlcwRQJSwrnMw&s" width="32" height="32">
-                </a>
-
-                <a href="{% url 'search' %}">
-                    <img src="https://cdn-icons-png.flaticon.com/512/54/54481.png" width="32" height="32" alt="Search">
-                </a>
-
-                <a href="{% url 'create_post' %}" class="footer-link">
-                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQkoxKFrM214HiJsJ13DqKYQSYIPBuHGqNFjg&s" width="32" height="32">
-                </a>
-                <!-- {% if user == profile.admin %} -->
-                <a href="{% url 'show_profile' profile.pk %}">
-                    <img src="{{ profile.profile_image_url }}" alt="{{ profile.username }}" width="32" height="32" style="border-radius: 50%; object-fit: cover;">
-                </a>
-                <!-- {% endif %} -->
-
-                {% else %}
-                <a href="{% url 'show_all_profiles' %}" class="footer-link">
-                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSIC02bIuhLOYHHA0btsxc4THlcwRQJSwrnMw&s" width="32" height="32">
-                </a>
+                    <a href="{% url 'login' %}">Login</a>
+                    <a href="{% url 'create_profile' %}">Create Profile</a>
                 {% endif %}
             </div>
-        </footer>
-   </body>
-</html>
+        </header>
+ 
+         <!-- other template code -->
+        <body style="width: 100%; padding-top: 80px; padding-bottom: 80px;">
+        {% block content %}
+        {% endblock %}
+        </body>
+ 
+        <!-- footer -->
+         <footer class="site-footer" style="width: 100%; padding: 20px 0; position:fixed; bottom:0; z-index: 1000; background-color: white;">
+             <div class="footer-content" style="display: flex; justify-content: center; align-items: center; gap: 20px;">
+ 
+                 {% if user.is_authenticated %}
+                     <p>Logged in as {{ user.username }}</p>
+                 {% else %}
+                     <p>user is not logged in.</p>
+                 {% endif %}
+ 
+                 {% if user.is_authenticated %}
+                 <a href="{% url 'show_feed' %}" class="footer-link">
+                     <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSIC02bIuhLOYHHA0btsxc4THlcwRQJSwrnMw&s" width="32" height="32">
+                 </a>
+ 
+                 <a href="{% url 'search' %}">
+                     <img src="https://cdn-icons-png.flaticon.com/512/54/54481.png" width="32" height="32" alt="Search">
+                 </a>
+ 
+                 <a href="{% url 'create_post' %}" class="footer-link">
+                     <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQkoxKFrM214HiJsJ13DqKYQSYIPBuHGqNFjg&s" width="32" height="32">
+                 </a>
+
+                 <a href="{% url 'show_profile' user.profile_set.first.pk %}">
+                     <img src="{{ profile.profile_image_url }}" alt="{{ profile.username }}" width="32" height="32" style="border-radius: 50%; object-fit: cover;">
+                 </a>
+ 
+                 {% else %}
+                 <a href="{% url 'show_all_profiles' %}" class="footer-link">
+                     <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSIC02bIuhLOYHHA0btsxc4THlcwRQJSwrnMw&s" width="32" height="32">
+                 </a>
+                 {% endif %}
+             </div>
+         </footer>
+    </body>
+ </html>

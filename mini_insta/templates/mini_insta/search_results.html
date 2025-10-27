@@ -8,7 +8,7 @@
     <div class="search-results-header">
         <h1>Search Results</h1>
         <p class="search-query">Results for "{{ query }}"</p>
-        <a href="{% url 'search' profile.pk %}" class="new-search-link">New Search</a>
+        <a href="{% url 'search' %}" class="new-search-link">New Search</a>
     </div>
 
     <!-- Matching Profiles Section -->
@@ -34,13 +34,6 @@
                         {% if profile_result.display_name %}
                             <p class="display-name">{{ profile_result.display_name }}</p>
                         {% endif %}
-                        {% if profile_result.bio_text %}
-                            <p class="bio-preview">{{ profile_result.bio_text|truncatewords:20 }}</p>
-                        {% endif %}
-                        <div class="profile-stats">
-                            <span class="stat">{{ profile_result.get_num_followers }} followers</span>
-                            <span class="stat">{{ profile_result.get_num_following }} following</span>
-                        </div>
                     </div>
                 </a>
             </div>

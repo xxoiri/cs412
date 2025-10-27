@@ -1,0 +1,23 @@
+<!-- mini_insta/logout.html -->
+ <!-- by Amy Ho, aho@bu.edu -->
+
+ {% extends 'mini_insta/base.html' %}
+
+ {% block content %}
+ <div class="logout-container">
+     {% if user.is_authenticated %}
+     <h2>Logout Confirmation</h2>
+     <form method="post">
+         {% csrf_token %}
+         <p>Are you sure you want to log out?</p>
+         <button type="submit">Log Out</button>
+     </form>
+     {% else %}
+     <h2>Logged Out</h2>
+     <p>You have been successfully logged out.</p>
+     {% endif %}
+     
+     <p><a href="{% url 'login' %}">Log in again</a></p>
+     <p><a href="{% url 'show_all_profiles' %}">Return to all profiles</a></p>
+ </div>
+ {% endblock %}

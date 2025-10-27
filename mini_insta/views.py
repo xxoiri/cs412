@@ -9,6 +9,8 @@ from django.urls import reverse_lazy
 from .models import *
 from .forms import *
 from .mixins import ProfileLoginRequiredMixin
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import login
 
 # Create your views here.
 class ProfileListView(ListView):
@@ -18,7 +20,7 @@ class ProfileListView(ListView):
     template_name = "mini_insta/show_all_profiles.html"
     context_object_name = "profiles"
 
-class ProfileView(DetailView):
+class ProfileView(ProfileLoginRequiredMixin, DetailView):
     '''Display a single profile.'''
 
     model = Profile
@@ -32,6 +34,22 @@ class PostDetailView(DetailView):
     template_name='mini_insta/show_post.html'
     context_object_name='post'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        post = self.get_object()
+        current_profile = self.request.user.profile_set.first() if self.request.user.is_authenticated else None
+
+        # Determine if the current user has liked this post
+        if current_profile:
+            is_liked = Like.objects.filter(post=post, profile=current_profile).exists()
+        else:
+            is_liked = False
+
+        # Add data to context
+        context['current_profile'] = current_profile
+        context['is_liked'] = is_liked
+        return context
+
 class CreatePostView(ProfileLoginRequiredMixin, CreateView):
     '''Display a form for post creation.'''
 
@@ -40,19 +58,16 @@ class CreatePostView(ProfileLoginRequiredMixin, CreateView):
     fields = ['caption']
 
     def get_context_data(self, **kwargs):
-        '''Add the profile object to the template context.'''
         context = super().get_context_data(**kwargs)
-        # Get the profile from URL parameter
-        profile_pk = self.kwargs['pk']
-        profile = get_object_or_404(Profile, pk=profile_pk)
-        context['profile'] = profile
+        # Use the logged-in user's profile instead of URL parameter
+        context['profile'] = self.get_profile()
         return context
+    
     def form_valid(self, form):
         '''handles the form submission - create post and associated photo(s)'''
         
-        # Get the profile from URL parameter
-        profile_pk = self.kwargs['pk']
-        profile = get_object_or_404(Profile, pk=profile_pk)
+        # Get the profile of logged in user
+        profile = self.get_profile()
 
         # Set the profile for the post before saving
         post = form.save(commit=False)
@@ -67,14 +82,6 @@ class CreatePostView(ProfileLoginRequiredMixin, CreateView):
                 image_file=file
             )
 
-        # create the photo object with the image_url from the form 
-        # image_url = self.request.POST.get('image_file')
-        # if image_url:
-        #     Photo.objects.create(
-        #         post=post,
-        #         image_url=image_url
-        #     )
-
         # redirect to the newly created post's detail page
         return super().form_valid(form)
     
@@ -87,6 +94,9 @@ class UpdateProfileView(ProfileLoginRequiredMixin, UpdateView):
     model = Profile
     form_class = UpdateProfileForm
     template_name = 'mini_insta/update_profile_form.html'
+    def get_object(self):
+        '''Get the profile for the logged in user.'''
+        return self.get_profile()
 
 class DeletePostView(ProfileLoginRequiredMixin, DeleteView):
     '''View class to delete a post on a profile.'''
@@ -130,15 +140,13 @@ class PostFeedListView(ProfileLoginRequiredMixin, ListView):
     
     def get_queryset(self):
         '''Get the post feed for the specific profile'''
-        profile_pk = self.kwargs['pk']
-        profile = get_object_or_404(Profile, pk=profile_pk)
+        profile = self.get_profile()
         return profile.get_post_feed()
     
     def get_context_data(self, **kwargs):
         '''Add the profile to context'''
         context = super().get_context_data(**kwargs)
-        profile_pk = self.kwargs['pk']
-        context['profile'] = get_object_or_404(Profile, pk=profile_pk)
+        context['profile'] = self.get_profile()
         return context
 
 class SearchView(ProfileLoginRequiredMixin, ListView):
@@ -149,8 +157,8 @@ class SearchView(ProfileLoginRequiredMixin, ListView):
     def dispatch(self, request, *args, **kwargs):
         '''Handle GET requests and check for search query.'''
         if 'query' not in self.request.GET:
-            # No query present, show search form
-            profile = get_object_or_404(Profile, pk=self.kwargs['pk'])
+            # No query present, use logged-in user's profile
+            profile = self.get_profile()
             return render(request, 'mini_insta/search.html', {
                 'profile': profile
             })
@@ -172,7 +180,7 @@ class SearchView(ProfileLoginRequiredMixin, ListView):
         query = self.request.GET.get('query', '').strip()
         
         # Add profile object
-        context['profile'] = get_object_or_404(Profile, pk=self.kwargs['pk'])
+        context['profile'] = self.get_profile()
         
         # Add query
         context['query'] = query
@@ -188,3 +196,120 @@ class SearchView(ProfileLoginRequiredMixin, ListView):
             context['matching_profiles'] = Profile.objects.none()
         
         return context
+    
+class CreateProfileView(CreateView):
+        '''View to create a new User and Profile. '''
+        model = Profile
+        form_class = CreateProfileForm
+        template_name = 'mini_insta/create_profile_form.html'
+        success_url = reverse_lazy('show_all_profiles')
+
+        def get_context_data(self, **kwargs):
+            '''Add UserCreationForm to the context.'''
+            context = super().get_context_data(**kwargs)
+            # Add the UserCreationForm to context
+            context['user_form'] = UserCreationForm()
+            return context
+
+        def form_valid(self, form):
+            '''Handle both User creation and Profile creation.'''
+            # Reconstruct UserCreationForm from POST data
+            user_form = UserCreationForm(self.request.POST)
+            
+            if user_form.is_valid():
+                # Save the User and get the User object
+                user = user_form.save()
+                
+                # Log the user in
+                login(self.request, user, backend='django.contrib.auth.backends.ModelBackend')
+                
+                # Attach the User to the Profile instance
+                profile = form.save(commit=False)
+                profile.user = user
+                profile.save()
+                
+                return super().form_valid(form)
+            else:
+                # If UserCreationForm is invalid, re-render the form with errors
+                return self.form_invalid(form)
+
+        def form_invalid(self, form):
+            '''Handle invalid form submission.'''
+            # Re-create the context with UserCreationForm errors
+            context = self.get_context_data()
+            context['user_form'] = UserCreationForm(self.request.POST)
+            return self.render_to_response(context)
+        
+class FollowView(ProfileLoginRequiredMixin, TemplateView):
+    '''View to follow a profile.'''
+    
+    def dispatch(self, request, *args, **kwargs):
+        # Get the profile to follow
+        profile_to_follow = get_object_or_404(Profile, pk=self.kwargs['pk'])
+        current_profile = self.get_profile()
+        
+        # Prevent self-following
+        if profile_to_follow != current_profile:
+            # Check if follow relationship already exists
+            follow, created = Follow.objects.get_or_create(
+                profile=profile_to_follow,
+                follower_profile=current_profile
+            )
+        
+        # Redirect back to the profile page
+        return redirect('show_profile', pk=profile_to_follow.pk)
+    
+    
+
+class DeleteFollowView(ProfileLoginRequiredMixin, TemplateView):
+    '''View to unfollow a profile.'''
+
+    def dispatch(self, request, *args, **kwargs):
+        # Get the profile to unfollow
+        profile_to_unfollow = get_object_or_404(Profile, pk=self.kwargs['pk'])
+        current_profile = self.get_profile()
+        
+        # Delete the follow relationship if it exists
+        Follow.objects.filter(
+            profile=profile_to_unfollow,
+            follower_profile=current_profile
+        ).delete()
+        
+        # Redirect back to the profile page
+        return redirect('show_profile', pk=profile_to_unfollow.pk)
+
+class LikeView(ProfileLoginRequiredMixin, TemplateView):
+    '''View to like a post.'''
+    
+    def dispatch(self, request, *args, **kwargs):
+        # Get the post to like
+        post_to_like = get_object_or_404(Post, pk=self.kwargs['pk'])
+        current_profile = self.get_profile()
+        
+        # Prevent liking own post
+        if post_to_like.profile != current_profile:
+            # Check if like already exists
+            like, created = Like.objects.get_or_create(
+                post=post_to_like,
+                profile=current_profile
+            )
+        
+        # Redirect back to the post page
+        return redirect('show_post', pk=post_to_like.pk)
+
+class DeleteLikeView(ProfileLoginRequiredMixin, TemplateView):
+    '''View to unlike a post.'''
+    
+    def dispatch(self, request, *args, **kwargs):
+        # Get the post to unlike
+        post_to_unlike = get_object_or_404(Post, pk=self.kwargs['pk'])
+        current_profile = self.get_profile()
+        
+        # Delete the like relationship if it exists
+        Like.objects.filter(
+            post=post_to_unlike,
+            profile=current_profile
+        ).delete()
+        
+        # Redirect back to the post page
+        return redirect('show_post', pk=post_to_unlike.pk)

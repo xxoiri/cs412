@@ -54,6 +54,10 @@ class Profile(models.Model):
         posts = Post.objects.filter(profile__in=following_profiles).order_by('-timestamp')
         return posts
     
+    def is_followed_by(self):
+        '''check if this profile is followed by another profile'''
+        return Follow.objects.filter(profile=self, follower_profile=profile).exists()
+    
 class Post(models.Model):
     '''Model the data attributes of an Instagram Post.'''
 

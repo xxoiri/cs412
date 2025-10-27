@@ -3,6 +3,7 @@
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404
+from django.urls import reverse_lazy
 from .models import Profile
 
 class ProfileLoginRequiredMixin(LoginRequiredMixin):
@@ -11,7 +12,6 @@ class ProfileLoginRequiredMixin(LoginRequiredMixin):
     def get_profile(self):
         '''get the profile associated with the logged-in user'''
         # For users with multiple profiles, get the first one
-        # In a real app, you might want to handle this differently
         profile = get_object_or_404(Profile, user=self.request.user)
         return profile
     
@@ -24,3 +24,6 @@ class ProfileLoginRequiredMixin(LoginRequiredMixin):
             except:
                 context['current_profile'] = None
         return context
+    
+    def get_login_url(self):
+        return reverse_lazy('login')

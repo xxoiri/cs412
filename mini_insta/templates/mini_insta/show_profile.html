@@ -45,6 +45,17 @@
         </div>
     </div>
 
+    <!-- Follow and unfollow button -->
+    {% if user.is_authenticated %}
+        {% if current_profile != profile %} 
+            {% if current_profile in profile.get_followers %}
+                <a href="{% url 'delete_follow' profile.pk %}" class="btn btn-unfollow">Unfollow</a>
+            {% else %}
+                <a href="{% url 'follow_profile' profile.pk %}" class="btn btn-follow">Follow</a>
+            {% endif %}
+        {% endif %}
+    {% endif %}
+
     <!-- Tabs Navigation -->
     <div class="profile-tabs">
         <a href="#" class="tab active">POSTS</a>
