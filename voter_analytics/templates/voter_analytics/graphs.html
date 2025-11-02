@@ -1,0 +1,94 @@
+<!-- voter_analytics/templates/voter_analytics/graphs.html -->
+<!-- Amy Ho, aho@bu.edu -->
+{% extends 'voter_analytics/base.html' %}
+
+{% block content %}
+<div class="container">
+    <h1>Voter Analytics Graphs</h1>
+    
+    <!-- Filter Form -->
+    <div class="filter-form">
+        <h2>Filter Voters</h2>
+        <form method="get">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="party">Party Affiliation:</label>
+                    <select name="party" id="party">
+                        <option value="">All Parties</option>
+                        <option value="D " {% if request.GET.party == "D " %}selected{% endif %}>Democratic</option>
+                        <option value="R " {% if request.GET.party == "R " %}selected{% endif %}>Republican</option>
+                        <option value="U " {% if request.GET.party == "U " %}selected{% endif %}>Unaffiliated</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="min_year">Born After:</label>
+                    <select name="min_year" id="min_year">
+                        <option value="">Any Year</option>
+                        {% for year in years %}
+                        <option value="{{ year }}" {% if request.GET.min_year == year %}selected{% endif %}>{{ year }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="max_year">Born Before:</label>
+                    <select name="max_year" id="max_year">
+                        <option value="">Any Year</option>
+                        {% for year in years %}
+                        <option value="{{ year }}" {% if request.GET.max_year == year %}selected{% endif %}>{{ year }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="min_score">Minimum Voter Score:</label>
+                    <select name="min_score" id="min_score">
+                        <option value="">Any Score</option>
+                        {% for score in scores %}
+                        <option value="{{ score }}" {% if request.GET.min_score == score %}selected{% endif %}>{{ score }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Elections Voted In:</label>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" name="elections" value="v20state" {% if "v20state" in selected_elections %}checked{% endif %}> 2020 State</label>
+                        <label><input type="checkbox" name="elections" value="v21town" {% if "v21town" in selected_elections %}checked{% endif %}> 2021 Town</label>
+                        <label><input type="checkbox" name="elections" value="v21primary" {% if "v21primary" in selected_elections %}checked{% endif %}> 2021 Primary</label>
+                        <label><input type="checkbox" name="elections" value="v22general" {% if "v22general" in selected_elections %}checked{% endif %}> 2022 General</label>
+                        <label><input type="checkbox" name="elections" value="v23town" {% if "v23town" in selected_elections %}checked{% endif %}> 2023 Town</label>
+                    </div>
+                </div>
+            </div>
+            
+            <button type="submit">Apply Filters to Graphs</button>
+            <a href="{% url 'graphs' %}" class="clear-link">Clear Filters</a>
+        </form>
+    </div>
+    
+    <!-- Display Graphs -->
+    <div class="graphs-container">
+        <!-- Birth Year Histogram -->
+        <div class="graph-row">
+            <h2>Distribution of Voters by Birth Year</h2>
+            {{ birth_year_histogram|safe }}
+        </div>
+        
+        <!-- Party Affiliation Pie Chart -->
+        <div class="graph-row">
+            <h2>Distribution of Voters by Party Affiliation</h2>
+            {{ party_pie_chart|safe }}
+        </div>
+        
+        <!-- Election Participation Histogram -->
+        <div class="graph-row">
+            <h2>Election Participation Distribution</h2>
+            {{ election_participation_histogram|safe }}
+        </div>
+    </div>
+</div>
+{% endblock %}

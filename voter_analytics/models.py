@@ -65,11 +65,11 @@ def load_data():
                 doReg=datetime.strptime(fields[8], '%Y-%m-%d').date(),
                 party_affiliation=fields[9],
                 precinct_num=fields[10],
-                v20state=fields[11].upper() == 'Y',
-                v21town=fields[12].upper() == 'Y',
-                v21primary=fields[13].upper() == 'Y',
-                v22general=fields[14].upper() == 'Y',
-                v23town=fields[15].upper() == 'Y',
+                v20state=fields[11].upper() == 'TRUE',
+                v21town=fields[12].upper() == 'TRUE',
+                v21primary=fields[13].upper() == 'TRUE',
+                v22general=fields[14].upper() == 'TRUE',
+                v23town=fields[15].upper() == 'TRUE',
                 voter_score=int(fields[16]),
 
             )
