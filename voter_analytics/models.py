@@ -63,7 +63,7 @@ def load_data():
                 zip_code=fields[6],
                 doB=datetime.strptime(fields[7], '%Y-%m-%d').date(),
                 doReg=datetime.strptime(fields[8], '%Y-%m-%d').date(),
-                party_affiliation=fields[9].strip(),
+                party_affiliation=fields[9],
                 precinct_num=fields[10],
                 v20state=fields[11].upper() == 'Y',
                 v21town=fields[12].upper() == 'Y',

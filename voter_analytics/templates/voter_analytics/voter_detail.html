@@ -1,0 +1,50 @@
+<!-- voter_analytics/templates/voter_analytics/voter_detail.html -->
+<!-- Amy Ho, aho@bu.edu -->
+{% extends 'voter_analytics/base.html' %}
+
+{% block content %}
+<div class="container">
+    <h1>Voter Details</h1>
+    
+    <div class="voter-detail">
+        <h2>{{ voter.first_name }} {{ voter.last_name }}</h2>
+        
+        <div class="voter-info">
+            <h3>Personal Information</h3>
+            <p><strong>Date of Birth:</strong> {{ voter.doB }}</p>
+            <p><strong>Date of Registration:</strong> {{ voter.doReg }}</p>
+            <p><strong>Party Affiliation:</strong> {{ voter.party_affiliation }}</p>
+            <p><strong>Precinct:</strong> {{ voter.precinct_num }}</p>
+            <p><strong>Voter Score:</strong> {{ voter.voter_score }}</p>
+        </div>
+        
+        <div class="address-info">
+            <h3>Address</h3>
+            <p>{{ voter.st_number }} {{ voter.st_name }}</p>
+            {% if voter.apt_num %}
+            <p>Apartment: {{ voter.apt_num }}</p>
+            {% endif %}
+            <p>Zip Code: {{ voter.zip_code }}</p>
+            
+            <!-- Google Maps Link -->
+            <a href="https://www.google.com/maps/search/?api=1&query={{ voter.st_number }}+{{ voter.st_name }}+Newton+MA+{{ voter.zip_code }}" 
+               target="_blank" class="map-link">
+                View on Google Maps
+            </a>
+        </div>
+        
+        <div class="election-info">
+            <h3>Election Participation</h3>
+            <ul>
+                <li>2020 State Election: {{ voter.v20state|yesno:"Yes,No" }}</li>
+                <li>2021 Town Election: {{ voter.v21town|yesno:"Yes,No" }}</li>
+                <li>2021 Primary: {{ voter.v21primary|yesno:"Yes,No" }}</li>
+                <li>2022 General Election: {{ voter.v22general|yesno:"Yes,No" }}</li>
+                <li>2023 Town Election: {{ voter.v23town|yesno:"Yes,No" }}</li>
+            </ul>
+        </div>
+        
+        <a href="{% url 'home' %}" class="back-link">← Back to Voter List</a>
+    </div>
+</div>
+{% endblock %}
