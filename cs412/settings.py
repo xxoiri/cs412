@@ -38,10 +38,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework', # Django REST framework
     'quotes', # ASSIGN 1
     'restaurant', # ASSIGN 2
     'mini_insta', # ASSIGN 3-7
     'voter_analytics', # ASSIGN 8
+    'dadjokes', # ASSIGN 8
 ]
 
 MIDDLEWARE = [
@@ -138,3 +140,9 @@ CS_DEPLOYMENT_HOSTNAME = 'cs-webapps.bu.edu'
 if socket.gethostname() == CS_DEPLOYMENT_HOSTNAME:
     STATIC_URL = '/aho/static/'
     MEDIA_URL = '/aho/media/'
+
+# rest framework
+REST_FRAMEWORK = {
+  'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+  'PAGE_SIZE': 10
+}

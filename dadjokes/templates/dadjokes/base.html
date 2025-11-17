@@ -1,0 +1,30 @@
+<!-- dadjokes/base.html -->
+ <!-- Amy Ho, aho@bu.edu -->
+{% load static %}
+<html>
+    <head>
+        <title>Random Dad Joke</title>
+        <link rel="stylesheet" href="{% static 'styles.css' %}">
+    </head>
+    <body>
+        <nav>
+            <li><a href="{% url 'home' %}">Home</a></li>
+            <li><a href="{% url 'random' %}">Joke</a></li>
+            <li><a href="{% url 'joke_list' %}">Show All Jokes</a></li>
+            <li><a href="{% url 'picture_list' %}">Show All Pictures</a></li>
+        </nav>
+        <!-- put page specific content here -->
+         {% block content %}
+         <h1>Dad Jokes</h1>
+        
+        <!-- joke -->
+         <p>
+             {{ joke.text }}
+         </p>
+        <!-- image -->
+         <p>
+             <img src="{{ picture.image_url }}" width="500" height="500"/>
+         </p>
+         {% endblock %}
+    </body>
+</html>

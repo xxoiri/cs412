@@ -1,0 +1,19 @@
+<!-- dadjokes/show_all_pictures.html -->
+ <!-- Amy Ho, aho@bu.edu -->
+{% extends 'dadjokes/base.html' %}
+
+    {% block content %}
+
+        <h2>Pictures/GIFs</h2>
+
+        <ul>
+            {% for picture in pictures %}
+            <div class="gallery">
+                <a target="_blank" href="{% url 'picture_detail' picture.pk %}">
+                    <img src="{{ picture.image_url }}" alt="picture/gif" width="200"/>
+                </a>
+            </div>
+            {% endfor %}
+        </ul>
+
+        {% endblock %}

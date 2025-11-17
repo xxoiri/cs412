@@ -1,0 +1,15 @@
+<!-- dadjokes/joke_detail.html -->
+ <!-- Amy Ho, aho@bu.edu -->
+
+{% extends 'dadjokes/base.html' %}
+
+{% block content %}
+<div class="joke">
+    <h1>Dad Jokes</h1>
+    <p>{{ joke.text }}</p>
+    <div class="meta">
+        Contributed by: {{ joke.contributor }} |
+        Created at: {{ joke.created_at|date:"M d, Y" }}
+    </div>
+</div>
+{% endblock %}

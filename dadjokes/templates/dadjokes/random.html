@@ -1,0 +1,17 @@
+<!-- dadjokes/joke.html -->
+ <!-- Amy Ho, aho@bu.edu -->
+{% extends 'dadjokes/base.html' %}
+
+        {% block content %}
+        <h1>Dad Jokes</h1>
+        
+        <!-- random joke -->
+        <p>
+            {{joke.text}}
+        </p>
+
+        <!-- random picture -->
+        <p>
+            <img src="{{ picture.image_url }}" width="500" height="500"/>
+        </p>
+        {% endblock %}

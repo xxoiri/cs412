@@ -1,0 +1,17 @@
+<!-- dadjokes/show_all_jokes.html -->
+ <!-- Amy Ho, aho@bu.edu -->
+{% extends 'dadjokes/base.html' %}
+
+    {% block content %}
+        <h2>Dad jokes</h2>
+        
+        <ul>
+            {% for joke in jokes %}
+            <a href="{% url 'joke_detail' joke.pk %}">
+                <li>"{{ joke.text }}</li>
+            </a>
+            {% endfor %}
+        </ul>
+
+
+        {% endblock %}
