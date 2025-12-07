@@ -6,6 +6,7 @@ from .models import Category, Item, PurchaseRecord, UsageRecord
 from django.utils import timezone
 
 class CategoryForm(forms.ModelForm):
+    '''Form to create a new category.'''
     class Meta:
         model = Category
         fields = ['name', 'description']
@@ -14,6 +15,7 @@ class CategoryForm(forms.ModelForm):
         }
 
 class ItemForm(forms.ModelForm):
+    '''Form to create new item within a category.'''
     class Meta:
         model = Item
         fields = ['name', 'description', 'category', 'current_quantity', 'minimum_quantity']
@@ -22,6 +24,7 @@ class ItemForm(forms.ModelForm):
         }
 
 class PurchaseRecordForm(forms.ModelForm):
+    '''Form to add purchased items into inventory.'''
     class Meta:
         model = PurchaseRecord
         fields = ['item', 'purchase_date', 'quantity', 'unit_cost']
@@ -34,6 +37,7 @@ class PurchaseRecordForm(forms.ModelForm):
         self.fields['purchase_date'].initial = timezone.now().date()
 
 class UsageRecordForm(forms.ModelForm):
+    '''Form to record used items.'''
     class Meta:
         model = UsageRecord
         fields = ['item', 'usage_date', 'quantity_used']
