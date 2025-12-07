@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'mini_insta', # ASSIGN 3-7
     'voter_analytics', # ASSIGN 8
     'dadjokes', # ASSIGN 8
+    'project', # FINAL PROJECT
 ]
 
 MIDDLEWARE = [
