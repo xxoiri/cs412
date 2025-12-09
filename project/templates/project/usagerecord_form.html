@@ -57,7 +57,7 @@
                 <button type="submit" class="btn primary">
                     {% if form.instance.pk %}Update Usage{% else %}Log Usage{% endif %}
                 </button>
-                <a href="{% if form.instance.pk %}{% url 'usage-list' %}{% else %}{% url 'item-list' %}{% endif %}" class="btn secondary">
+                <a href="{% if form.instance.pk %}{% url 'usage-list' %}{% else %}{% url 'usage-list' %}{% endif %}" class="btn secondary">
                     Cancel
                 </a>
             </div>

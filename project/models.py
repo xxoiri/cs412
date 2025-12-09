@@ -54,6 +54,11 @@ class PurchaseRecord(models.Model):
         '''returns all purchase records for this item'''
         return self.item.purchases.all().order_by('-purchase_date')
 
+    def get_total_cost(self):
+        """Calculate total cost for a purchase"""
+        return self.quantity * self.unit_cost
+
+
 
 class UsageRecord(models.Model):
     '''Items that we are using/have used.'''

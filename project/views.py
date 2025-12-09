@@ -128,6 +128,26 @@ class PurchaseRecordListView(ListView):
     model = PurchaseRecord
     context_object_name = 'purchases'
     template_name = 'project/purchaserecord_list.html'
+    
+    def get_queryset(self):
+        return PurchaseRecord.objects.select_related('item', 'item__category').all()
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        purchases = context['purchases']
+        
+        # Calculate totals
+        total_quantity = sum(purchase.quantity for purchase in purchases)
+        total_spent = sum(purchase.quantity * purchase.unit_cost for purchase in purchases)
+        
+        context['total_quantity'] = total_quantity
+        context['total_spent'] = total_spent
+        
+        # Also add total_cost for each purchase
+        for purchase in purchases:
+            purchase.total_cost = purchase.quantity * purchase.unit_cost
+        
+        return context
 
 class PurchaseRecordCreateView(CreateView):
     model = PurchaseRecord

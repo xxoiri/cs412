@@ -17,9 +17,12 @@
 
     <!-- Items in Category -->
     <div class="category-items-section">
-        <div style="position: relative;">
-            <h2 style="display: inline-block; margin: 0;">Items in this Category: {{category.item_set.count}}</h2>
-            <a href="{% url 'item-create' %}" class="btn" style="position: absolute; right: 0; top: 0;">Add Item</a>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <h2 style="margin: 0;">Items in this Category: {{category.item_set.count}}</h2>
+            <div style="display: flex; gap: 0.5rem;">
+                <a href="{% url 'category-delete' category.pk %}" class="btn">Delete Category</a>
+                <a href="{% url 'item-create' %}" class="btn btn-primary">Add Item</a>
+            </div>
         </div>
         
         {% if category.item_set.all %}
@@ -65,7 +68,6 @@
         <div class="empty-state">
             <h3>No items in this category yet</h3>
             <p>Add items to get started with inventory tracking.</p>
-            <a href="{% url 'item-create' %}?category={{ category.pk }}" class="btn primary">Add First Item</a>
         </div>
         {% endif %}
     </div>

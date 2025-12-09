@@ -5,51 +5,73 @@
 
 {% block content %}
 <div class="container">
+    <!-- Stats Overview Row -->
+    <div class="grid grid-3 mb-4">
+        <!-- Items Card -->
+        <a href="{% url 'item-list' %}" class="stat-card text-decoration-none">
+            <div class="text-center">
+                <i class="fas fa-boxes fa-2x mb-3" style="color: var(--primary-color);"></i>
+                <h3 class="mb-2">Items</h3>
+                <div class="stat-number">{{ total_items }}</div>
+                <p class="text-muted mb-0">Total Items in Inventory</p>
+            </div>
+        </a>
+        
+        <!-- Categories Card -->
+        <a href="{% url 'category-list' %}" class="stat-card text-decoration-none">
+            <div class="text-center">
+                <i class="fas fa-tags fa-2x mb-3" style="color: var(--success-color);"></i>
+                <h3 class="mb-2">Categories</h3>
+                <div class="stat-number">{{ total_categories }}</div>
+                <p class="text-muted mb-0">Total Categories Created</p>
+            </div>
+        </a>
+    </div>
 
-    <!-- Browse Categories -->
-    <div class="card">
+    <!-- Low Stock Section -->
+    <div class="card mb-4">
         <div class="card-body">
             <div class="page-header">
-                <h2 class="mb-0"><i class="fas fa-tags"></i> Categories</h2>
-                <a href="{% url 'category-list' %}" class="btn btn-outline">
-                    View All Categories <i class="fas fa-arrow-right"></i>
+                <h2 class="mb-0"><i class="fas fa-exclamation-triangle"></i> Low Stock Items</h2>
                 </a>
             </div>
             
-            {% if categories %}
+            {% if low_stock_items %}
             <div class="grid grid-auto-fit gap-3">
-                {% for category in categories %}
-                <a href="{% url 'category-detail' category.pk %}" class="category-card text-decoration-none">
-                    <div class="category-header mb-2">
-                        <h4 class="mb-0">{{ category.name }}</h4>
-                        <span class="badge badge-primary">{{ category.item_set.count }} items</span>
+                {% for item in low_stock_items|slice:":6" %}
+                <a href="{% url 'item-detail' item.pk %}" class="item-card text-decoration-none low-stock">
+                    <div class="item-header mb-2">
+                        <h4 class="mb-0">{{ item.name }}</h4>
+                        <span class="badge badge-danger">Low Stock</span>
                     </div>
-                    {% if category.description %}
-                        <p class="category-description text-muted mb-2">
-                            {{ category.description|truncatechars:100 }}
+                    {% if item.description %}
+                        <p class="item-description text-muted mb-2">
+                            {{ item.description|truncatechars:100 }}
                         </p>
                     {% endif %}
-                    <div class="d-flex justify-content-between align-items-center">
-                        <small class="text-primary">
-                            <i class="fas fa-arrow-right"></i> View Items
-                        </small>
+                    <div class="item-stats mb-2">
+                        <div class="stat">
+                            <span class="stat-label">Current</span>
+                            <span class="stat-value danger">{{ item.current_quantity }}</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">Minimum</span>
+                            <span class="stat-value">{{ item.minimum_quantity }}</span>
+                        </div>
                     </div>
                 </a>
                 {% endfor %}
             </div>
             {% else %}
             <div class="text-center py-4">
-                <i class="fas fa-tags fa-2x text-muted mb-3"></i>
-                <p class="text-muted">No categories yet.</p>
-                <a href="{% url 'category-create' %}" class="btn btn-primary">
-                    <i class="fas fa-plus"></i> Create First Category
+                <i class="fas fa-check-circle fa-2x text-success mb-3"></i>
+                <p class="text-muted">No low stock items. Great job!</p>
+                <a href="{% url 'item-list' %}" class="btn btn-primary">
+                    <i class="fas fa-eye"></i> View All Items
                 </a>
             </div>
             {% endif %}
         </div>
     </div>
 </div>
-
-
-
 {% endblock %}

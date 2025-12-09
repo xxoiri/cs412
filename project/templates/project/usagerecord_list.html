@@ -6,9 +6,9 @@
 {% block content %}
 <div class="container">
     <div class="page-header">
-        <h1>📝 Usage History</h1>
+        <h1>Usage History</h1>
         <p>Total usage records: {{ usage_records.count }}</p>
-        <a href="{% url 'usage-create' %}" class="btn primary">
+        <a href="{% url 'usage-create' %}" class="btn">
             <span>+</span> Log Usage
         </a>
     </div>
@@ -38,9 +38,6 @@
                     <td>
                         <span class="stock-indicator {% if usage.item.current_quantity <= usage.item.minimum_quantity %}danger{% endif %}">
                             {{ usage.item.current_quantity }}
-                            {% if usage.item.current_quantity <= usage.item.minimum_quantity %}
-                                ⚠️
-                            {% endif %}
                         </span>
                     </td>
                     <td class="table-actions">
@@ -74,7 +71,6 @@
     <div class="empty-state">
         <h3>No usage records yet</h3>
         <p>Start tracking your usage to maintain accurate inventory levels.</p>
-        <a href="{% url 'usage-create' %}" class="btn primary">Log First Usage</a>
     </div>
     {% endif %}
 </div>

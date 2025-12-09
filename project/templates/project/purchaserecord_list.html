@@ -6,9 +6,9 @@
 {% block content %}
 <div class="container">
     <div class="page-header">
-        <h1>🛒 Purchase History</h1>
+        <h1>Purchase History</h1>
         <p>Total purchases: {{ purchases.count }}</p>
-        <a href="{% url 'purchase-create' %}" class="btn primary">
+        <a href="{% url 'purchase-create' %}" class="btn">
             <span>+</span> Add Purchase
         </a>
     </div>
@@ -65,7 +65,6 @@
     <div class="empty-state">
         <h3>No purchase records yet</h3>
         <p>Start tracking your purchases to maintain accurate inventory.</p>
-        <a href="{% url 'purchase-create' %}" class="btn primary">Add First Purchase</a>
     </div>
     {% endif %}
 </div>

@@ -7,7 +7,7 @@
 <div class="container">
     <div class="form-container">
         <div class="form-header">
-            <h1>{% if form.instance.pk %}✏️ Edit Purchase{% else %}🛒 Record Purchase{% endif %}</h1>
+            <h1>{% if form.instance.pk %}✏️ Edit Purchase{% else %}Record Purchase{% endif %}</h1>
             <p>{% if form.instance.pk %}Update purchase details{% else %}Add purchased items to inventory{% endif %}</p>
         </div>
 
@@ -64,7 +64,7 @@
                 <button type="submit" class="btn primary">
                     {% if form.instance.pk %}Update Purchase{% else %}Record Purchase{% endif %}
                 </button>
-                <a href="{% if form.instance.pk %}{% url 'purchase-list' %}{% else %}{% url 'item-list' %}{% endif %}" class="btn secondary">
+                <a href="{% if form.instance.pk %}{% url 'purchase-list' %}{% else %}{% url 'purchase-list' %}{% endif %}" class="btn secondary">
                     Cancel
                 </a>
             </div>
