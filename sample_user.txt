@@ -1,0 +1,5 @@
+I don't have user authentication programmed into this application.
+It would make sense to implement it since it will record each individual user's 
+inventory. If I were to implement it, I would use the LogInRequired MixIn for every
+View class so that every page (adding, removing, deletion, etc) would require the user's
+identity to be verified.
