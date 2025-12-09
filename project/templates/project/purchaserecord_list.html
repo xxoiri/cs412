@@ -1,177 +1,153 @@
 <!-- project/purchaserecord_list.html -->
 <!-- Amy Ho, aho@bu.edu -->
-
 {% extends 'project/base.html' %}
 
 {% block content %}
 <div class="container">
     <div class="page-header">
-        <h1>Purchase History</h1>
-        <p>Total purchases: {{ purchases.count }}</p>
-        <a href="{% url 'purchase-create' %}" class="btn">
-            <span>+</span> Add Purchase
-        </a>
+        <h1>Purchase Records</h1>
+        <div class="header-actions">
+            <a href="{% url 'purchase-create' %}" class="btn btn-primary">
+                <span>+</span> Add New Purchase
+            </a>
+        </div>
     </div>
-
-    {% if purchases %}
+    
+    <!-- Search Filters -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="GET" action="{% url 'purchase-list' %}" class="form">
+                <div class="form-grid">
+                    <!-- Search Input -->
+                    <div class="form-group">
+                        <label for="search">Search Purchases</label>
+                        <div class="search-input-group" style="display: flex;">
+                            <input type="text" 
+                                   id="search"
+                                   name="search" 
+                                   class="form-control" 
+                                   placeholder="Search by item name or category..." 
+                                   value="{{ search_query }}">
+                            <button type="submit" class="btn btn-primary" style="margin-left: 10px; border-radius: var(--radius-md);">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                </svg>
+                                Search
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Category Filter -->
+                    <div class="form-group">
+                        <label for="category">Filter by Category</label>
+                        <select id="category" name="category" class="form-control" onchange="this.form.submit()">
+                            <option value="all" {% if selected_category == 'all' %}selected{% endif %}>All Categories</option>
+                            {% for category in all_categories %}
+                            <option value="{{ category.id }}" 
+                                    {% if selected_category == category.id|stringformat:"i" %}selected{% endif %}>
+                                {{ category.name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Clear Filters Button -->
+                {% if search_query or selected_category != 'all' %}
+                <div style="margin-top: 15px;">
+                    <a href="{% url 'purchase-list' %}" class="btn btn-outline">
+                        Clear All Filters
+                    </a>
+                </div>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+    
+    <!-- Summary -->
+    <div class="alert alert-info mb-4">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <strong>Total Spent:</strong> ${{ total_spent|floatformat:2 }}
+                <strong class="ml-4">Records:</strong> {{ purchases.count }}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Table -->
     <div class="table-responsive">
-        <table>
+        <table class="table">
             <thead>
                 <tr>
-                    <th>Date</th>
                     <th>Item</th>
-                    <th>Category</th>
+                    <th>Date</th>
                     <th>Quantity</th>
                     <th>Unit Cost</th>
-                    <th>Total Cost</th>
+                    <th>Total</th>
                     <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
                 {% for purchase in purchases %}
                 <tr>
-                    <td>{{ purchase.purchase_date }}</td>
                     <td>
-                        <a href="{% url 'item-detail' purchase.item.pk %}">{{ purchase.item.name }}</a>
+                        <a href="{% url 'item-detail' purchase.item.pk %}" class="text-decoration-none">
+                            {{ purchase.item.name }}
+                        </a>
+                        <br>
+                        <small class="text-muted">{{ purchase.item.category.name }}</small>
                     </td>
-                    <td>{{ purchase.item.category.name }}</td>
+                    <td>{{ purchase.purchase_date }}</td>
                     <td>{{ purchase.quantity }}</td>
-                    <td>${{ purchase.unit_cost }}</td>
-                    <td>${{ purchase.total_cost|floatformat:2 }}</td>
-                    <td class="table-actions">
-                        <a href="{% url 'purchase-update' purchase.pk %}" class="action-link">Edit</a>
-                        <a href="{% url 'purchase-delete' purchase.pk %}" class="action-link danger">Delete</a>
+                    <td>${{ purchase.unit_cost|floatformat:2 }}</td>
+                    <td><strong>${{ purchase.total_cost|floatformat:2 }}</strong></td>
+                    <td>
+                        <div style="display: flex; gap: 5px;">
+                            <a href="{% url 'purchase-update' purchase.pk %}" 
+                               class="btn btn-sm" 
+                               style="background-color: #667eea; color: white; border: none; padding: 4px 8px; border-radius: 4px; text-decoration: none;">
+                                Edit
+                            </a>
+                            <a href="{% url 'purchase-delete' purchase.pk %}" 
+                               class="btn btn-sm" 
+                               style="background-color: #ff6b6b; color: white; border: none; padding: 4px 8px; border-radius: 4px; text-decoration: none;">
+                                Delete
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center py-4">
+                        <div class="text-muted">
+                            <h4>No purchases found</h4>
+                            <p>
+                                {% if search_query or selected_category != 'all' %}
+                                    Try adjusting your search criteria
+                                {% else %}
+                                    Add your first purchase to get started
+                                {% endif %}
+                            </p>
+                        </div>
                     </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
-
-    <div class="summary-card">
-        <h3>Purchase Summary</h3>
-        <div class="summary-grid">
-            <div class="summary-item">
-                <span class="summary-label">Total Items Purchased</span>
-                <span class="summary-value">{{ total_quantity }}</span>
-            </div>
-            <div class="summary-item">
-                <span class="summary-label">Total Spent</span>
-                <span class="summary-value">${{ total_spent|floatformat:2 }}</span>
+    
+    <!-- Simple Chart -->
+    {% if monthly_chart %}
+    <div class="card mb-4">
+        <div class="card-body">
+            <h3 class="mb-3">Monthly Spending</h3>
+            <div style="height: 300px;">
+                {{ monthly_chart|safe }}
             </div>
         </div>
     </div>
-    {% else %}
-    <div class="empty-state">
-        <h3>No purchase records yet</h3>
-        <p>Start tracking your purchases to maintain accurate inventory.</p>
-    </div>
     {% endif %}
-</div>
 
-<style>
-    .table-responsive {
-        overflow-x: auto;
-        margin-bottom: 2rem;
-        background: white;
-        border-radius: 10px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-    
-    table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-    
-    th {
-        background: #f8f9fa;
-        padding: 1rem;
-        text-align: left;
-        font-weight: 600;
-        color: #333;
-        border-bottom: 2px solid #e9ecef;
-    }
-    
-    td {
-        padding: 1rem;
-        border-bottom: 1px solid #e9ecef;
-        color: #666;
-    }
-    
-    tr:hover {
-        background: #f8f9fa;
-    }
-    
-    .table-actions {
-        display: flex;
-        gap: 0.5rem;
-    }
-    
-    .action-link {
-        color: #667eea;
-        text-decoration: none;
-        font-size: 0.9rem;
-        padding: 0.25rem 0.5rem;
-        border-radius: 4px;
-        transition: background 0.3s;
-    }
-    
-    .action-link:hover {
-        background: #e9ecef;
-    }
-    
-    .action-link.danger {
-        color: #ff6b6b;
-    }
-    
-    .summary-card {
-        background: white;
-        padding: 1.5rem;
-        border-radius: 10px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        margin-top: 2rem;
-    }
-    
-    .summary-card h3 {
-        margin: 0 0 1rem 0;
-        color: #333;
-    }
-    
-    .summary-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 1.5rem;
-    }
-    
-    .summary-item {
-        text-align: center;
-        padding: 1rem;
-        background: #f8f9fa;
-        border-radius: 8px;
-    }
-    
-    .summary-label {
-        display: block;
-        color: #666;
-        font-size: 0.9rem;
-        margin-bottom: 0.5rem;
-    }
-    
-    .summary-value {
-        display: block;
-        font-size: 1.5rem;
-        font-weight: bold;
-        color: #667eea;
-    }
-    
-    @media (max-width: 768px) {
-        table {
-            font-size: 0.9rem;
-        }
-        
-        th, td {
-            padding: 0.75rem;
-        }
-    }
-</style>
+</div>
 {% endblock %}

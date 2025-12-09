@@ -13,7 +13,7 @@
     </div>
 </a>
 
-<body style="width: 100%; padding-bottom: 175px;">
+<body style="width: 100%; padding-bottom: 175;">
 {% block content %}
 {% endblock %}
 </body>
@@ -22,17 +22,17 @@
  <div class="card mb-5" style="width: 100%; position:fixed; bottom: 0; margin-bottom: 0; border-radius: 0;">
     <div class="card-body">
         <div class="d-flex flex-wrap gap-3" style="justify-content: center;">
-            <a href="{% url 'category-list' %}" class="btn btn-secondary">
+            <a href="{% url 'category-list' %}" class="btn btn-primary">
                 <i class="fas fa-plus"></i>All Categories
             </a>
-            <a href="{% url 'item-list' %}" class="btn btn-secondary" style="margin-left: 10px;">
+            <a href="{% url 'item-list' %}" class="btn btn-primary" style="margin-left: 10px;">
                 <i class="fas fa-shopping-cart" ></i>All Items
             </a>
-            <a href="{% url 'usage-list' %}" class="btn btn-secondary" style="margin-left: 10px;">
+            <a href="{% url 'usage-list' %}" class="btn btn-primary" style="margin-left: 10px;">
                 <i class="fas fa-clipboard-list"></i>Log Usages
             </a>
-            <a href="{% url 'purchase-list' %}" class="btn btn-secondary" style="margin-left: 10px;">
-                <i class="fas fa-tag"></i>Add Purchases
+            <a href="{% url 'purchase-list' %}" class="btn btn-primary" style="margin-left: 10px;">
+                <i class="fas fa-tag"></i>Purchase Records
             </a>
         </div>
     </div>

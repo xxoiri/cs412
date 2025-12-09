@@ -3,12 +3,15 @@
 
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView
 from django.urls import reverse_lazy
-from django.db.models import Q
+from django.db.models import Q, Sum, F
 from .models import Category, Item, PurchaseRecord, UsageRecord
 from .forms import CategoryForm, ItemForm, PurchaseRecordForm, UsageRecordForm
 from django.shortcuts import redirect
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
+import plotly.graph_objs as go
+from plotly.offline import plot
+from django.db.models.functions import TruncMonth
+
 
 # Home Page
 class HomeView(TemplateView):
@@ -129,29 +132,94 @@ class ItemDeleteView(DeleteView):
 
 # PurchaseRecord Views
 class PurchaseRecordListView(ListView):
+    '''View to display purchase records with analytics.'''
+    
     model = PurchaseRecord
     context_object_name = 'purchases'
     template_name = 'project/purchaserecord_list.html'
-    
+
     def get_queryset(self):
-        return PurchaseRecord.objects.select_related('item', 'item__category').all()
-    
+        qs = PurchaseRecord.objects.select_related('item', 'item__category')
+        
+        # Apply search filter
+        search = self.request.GET.get('search')
+        if search:
+            qs = qs.filter(
+                Q(item__name__icontains=search) | 
+                Q(item__category__name__icontains=search)
+            )
+        
+        # Apply category filter
+        category = self.request.GET.get('category')
+        if category and category != 'all':
+            qs = qs.filter(item__category_id=category)
+        
+        return qs.order_by('-purchase_date')
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        
+        # Get filtered purchases
         purchases = context['purchases']
         
-        # Calculate totals
-        total_quantity = sum(purchase.quantity for purchase in purchases)
-        total_spent = sum(purchase.quantity * purchase.unit_cost for purchase in purchases)
+        # Calculate simple totals
+        total_spent = sum(p.quantity * p.unit_cost for p in purchases)
         
-        context['total_quantity'] = total_quantity
+        # Create ONE simple chart
+        context['monthly_chart'] = self.create_monthly_chart(purchases)
+        
+        # Add filter options
+        context['all_categories'] = Category.objects.all()
+        context['selected_category'] = self.request.GET.get('category', 'all')
+        context['search_query'] = self.request.GET.get('search', '')
         context['total_spent'] = total_spent
         
-        # Also add total_cost for each purchase
+        # Add total_cost for each purchase
         for purchase in purchases:
             purchase.total_cost = purchase.quantity * purchase.unit_cost
         
         return context
+
+    def create_monthly_chart(self, purchases):
+        '''Create a simple monthly spending chart'''
+        # Group by month
+        monthly_data = purchases.annotate(
+            month=TruncMonth('purchase_date')
+        ).values('month').annotate(
+            total=Sum(F('quantity') * F('unit_cost'))
+        ).order_by('month')
+        
+        # Extract data
+        months = []
+        totals = []
+        
+        for entry in monthly_data:
+            months.append(entry['month'].strftime('%b %Y'))
+            totals.append(float(entry['total'] or 0))
+        
+        # Create chart if we have data
+        if totals:
+            fig = go.Bar(
+                x=months, 
+                y=totals,
+                marker_color='#667eea'
+            )
+            
+            layout = go.Layout(
+                title="Monthly Spending",
+                xaxis_title="Month",
+                yaxis_title="Amount ($)",
+                showlegend=False
+            )
+            
+            graph_div = plot(
+                {"data": [fig], "layout": layout},
+                auto_open=False,
+                output_type="div"
+            )
+            return graph_div
+        
+        return None
 
 class PurchaseRecordCreateView(CreateView):
     model = PurchaseRecord
