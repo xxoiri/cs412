@@ -40,7 +40,7 @@
                 </thead>
                 <tbody>
                     {% for item in category.item_set.all %}
-                    <tr class="{% if item.current_quantity <= item.minimum_quantity %}low-stock-row{% endif %}">
+                    <tr class="{% if item.current_quantity < item.minimum_quantity %}low-stock-row{% endif %}">
                         <td>
                             <a href="{% url 'item-detail' item.pk %}">{{ item.name }}</a>
                             {% if item.description %}
@@ -50,7 +50,7 @@
                         <td>{{ item.current_quantity }}</td>
                         <td>{{ item.minimum_quantity }}</td>
                         <td>
-                            {% if item.current_quantity <= item.minimum_quantity %}
+                            {% if item.current_quantity < item.minimum_quantity %}
                                 <span class="status-badge danger">Low Stock</span>
                             {% else %}
                                 <span class="status-badge success">In Stock</span>

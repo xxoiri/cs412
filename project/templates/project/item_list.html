@@ -71,7 +71,7 @@
             </thead>
             <tbody>
                 {% for item in items %}
-                <tr class="{% if item.current_quantity <= item.minimum_quantity %}low-stock-row{% endif %}">
+                <tr class="{% if item.current_quantity < item.minimum_quantity %}low-stock-row{% endif %}">
                     <td>
                         <a href="{% url 'item-detail' item.pk %}" class="item-name">
                             {{ item.name }}
@@ -88,7 +88,7 @@
                         </span>
                     </td>
                     <td>
-                        <span class="quantity-value {% if item.current_quantity <= item.minimum_quantity %}danger{% endif %}">
+                        <span class="quantity-value {% if item.current_quantity < item.minimum_quantity %}danger{% endif %}">
                             {{ item.current_quantity }}
                         </span>
                     </td>
@@ -98,7 +98,7 @@
                         </span>
                     </td>
                     <td>
-                        {% if item.current_quantity <= item.minimum_quantity %}
+                        {% if item.current_quantity < item.minimum_quantity %}
                         <span class="status-badge status-warning">
                             Low Stock
                         </span>

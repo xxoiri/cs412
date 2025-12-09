@@ -24,7 +24,7 @@ class Category(models.Model):
         '''returns count of low stock items in category'''
         count = 0
         for item in self.item_set.all():
-            if item.current_quantity <= item.minimum_quantity:
+            if item.current_quantity < item.minimum_quantity:
                 count += 1
         return count
 

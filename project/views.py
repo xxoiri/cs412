@@ -29,7 +29,7 @@ class HomeView(TemplateView):
         # Calculate low stock items
         low_stock_items = []
         for item in items:
-            if item.current_quantity <= item.minimum_quantity:
+            if item.current_quantity < item.minimum_quantity:
                 low_stock_items.append(item)
         context['low_stock_items'] = low_stock_items
         context['low_stock_count'] = len(low_stock_items)
