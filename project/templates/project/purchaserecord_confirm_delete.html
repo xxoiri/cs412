@@ -1,0 +1,86 @@
+<!-- project/purchaserecord_confirm_delete.html -->
+<!-- Amy Ho, aho@bu.edu -->
+
+{% extends 'project/base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="delete-confirmation">
+        <div class="confirmation-header">
+            <h1>🗑️ Delete Purchase Record</h1>
+            <p>Please confirm this action</p>
+        </div>
+
+        <div class="record-to-delete">
+            <h2>{{ object.item.name }}</h2>
+            <div class="record-details">
+                <p><strong>Purchase Date:</strong> {{ object.purchase_date }}</p>
+                <p><strong>Quantity:</strong> {{ object.quantity }}</p>
+                <p><strong>Unit Cost:</strong> ${{ object.unit_cost }}</p>
+                <p><strong>Total Cost:</strong> ${{ object.total_cost|floatformat:2 }}</p>
+            </div>
+        </div>
+
+        <div class="warning-section">
+            <div class="warning-icon">⚠️</div>
+            <div class="warning-content">
+                <h3>Important: This will affect inventory!</h3>
+                <p>Deleting this purchase record will:</p>
+                <ul>
+                    <li>Reduce the item's current quantity by {{ object.quantity }}</li>
+                    <li>Affect inventory accuracy and reports</li>
+                    <li>This action cannot be undone</li>
+                </ul>
+                <p class="current-stock">
+                    Current stock of {{ object.item.name }}: <strong>{{ object.item.current_quantity }}</strong>
+                </p>
+            </div>
+        </div>
+
+        <form method="post" class="confirmation-form">
+            {% csrf_token %}
+            
+            <div class="confirmation-actions">
+                <button type="submit" class="btn danger" onclick="return confirm('Are you sure? This will update inventory quantities.')">
+                    Yes, Delete Purchase Record
+                </button>
+                <a href="{% url 'purchase-list' %}" class="btn secondary">
+                    No, Go Back
+                </a>
+            </div>
+
+            <div class="safe-alternatives">
+                <p><strong>Consider editing instead:</strong></p>
+                <p>If this purchase was recorded incorrectly, you might want to <a href="{% url 'purchase-update' object.pk %}">edit the purchase details</a> instead of deleting it.</p>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .record-to-delete {
+        background: #f8f9fa;
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin-bottom: 2rem;
+        border-left: 4px solid #ff6b6b;
+    }
+    
+    .record-details p {
+        margin: 0.5rem 0;
+        color: #666;
+    }
+    
+    .current-stock {
+        margin-top: 1rem;
+        padding: 0.75rem;
+        background: #fff3cd;
+        border-radius: 6px;
+        color: #856404;
+    }
+    
+    .current-stock strong {
+        color: #333;
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,225 @@
+<!-- project/item_confirm_delete.html -->
+<!-- Amy Ho, aho@bu.edu -->
+
+{% extends 'project/base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="delete-confirmation">
+        <div class="confirmation-header">
+            <h1>Delete Item</h1>
+            <p>Please confirm this action</p>
+        </div>
+
+        <div class="item-to-delete">
+            <h2>{{ item.name }}</h2>
+            <div class="item-details">
+                <p><strong>Category:</strong> {{ item.category.name }}</p>
+                {% if item.description %}
+                    <p><strong>Description:</strong> {{ item.description|truncatechars:100 }}</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="warning-section">
+            <div class="warning-content">
+                <h3>Warning: This action cannot be undone!</h3>
+                <p>All associated data will be permanently deleted.</p>
+            </div>
+        </div>
+
+        <form method="post" class="confirmation-form">
+            {% csrf_token %}
+            
+            <div class="confirmation-actions">
+                <button type="submit" class="btn danger" onclick="return confirm('Are you absolutely sure? This cannot be undone.')">
+                    Yes, Delete Permanently
+                </button>
+                <a href="{% url 'item-detail' item.pk %}" class="btn secondary">
+                    No, Go Back
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    /* Delete Confirmation Styles */
+    .delete-confirmation {
+        max-width: 600px;
+        margin: 2rem auto;
+        background: white;
+        padding: 2rem;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    
+    .confirmation-header {
+        text-align: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid #e9ecef;
+    }
+    
+    .confirmation-header h1 {
+        color: #333;
+        margin: 0 0 0.5rem 0;
+        font-size: 1.8rem;
+    }
+    
+    .confirmation-header p {
+        color: #666;
+        margin: 0;
+    }
+    
+    .item-to-delete {
+        background: #f8f9fa;
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin-bottom: 2rem;
+        border-left: 4px solid #ff6b6b;
+    }
+    
+    .item-to-delete h2 {
+        color: #333;
+        margin: 0 0 1rem 0;
+        font-size: 1.5rem;
+    }
+    
+    .item-details p {
+        margin: 0.5rem 0;
+        color: #666;
+    }
+    
+    .item-details strong {
+        color: #333;
+        min-width: 120px;
+        display: inline-block;
+    }
+    
+    .warning-section {
+        display: flex;
+        gap: 1rem;
+        background: #fff3cd;
+        border: 1px solid #ffeaa7;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        align-items: flex-start;
+    }
+    
+    .warning-icon {
+        font-size: 2rem;
+        flex-shrink: 0;
+    }
+    
+    .warning-content {
+        flex: 1;
+    }
+    
+    .warning-content h3 {
+        color: #856404;
+        margin: 0 0 1rem 0;
+        font-size: 1.2rem;
+    }
+    
+    .warning-content p, .warning-content li {
+        color: #856404;
+        margin: 0.5rem 0;
+    }
+    
+    .warning-content ul {
+        margin: 0.5rem 0;
+        padding-left: 1.5rem;
+    }
+    
+    .confirmation-form {
+        margin-top: 2rem;
+    }
+    
+    .confirmation-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+    }
+    
+    .btn {
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+        font-weight: 500;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.3s;
+        text-decoration: none;
+        text-align: center;
+        min-width: 200px;
+    }
+    
+    .btn.danger {
+        background: #ff6b6b;
+        color: white;
+    }
+    
+    .btn.danger:hover {
+        background: #ff5252;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(255, 107, 107, 0.3);
+    }
+    
+    .btn.secondary {
+        background: #6c757d;
+        color: white;
+    }
+    
+    .btn.secondary:hover {
+        background: #5a6268;
+        transform: translateY(-2px);
+    }
+    
+    .safe-alternatives {
+        background: #e7f3ff;
+        padding: 1rem;
+        border-radius: 6px;
+        border-left: 4px solid #667eea;
+        text-align: center;
+    }
+    
+    .safe-alternatives p {
+        margin: 0.5rem 0;
+        color: #333;
+    }
+    
+    .safe-alternatives a {
+        color: #667eea;
+        text-decoration: none;
+        font-weight: 500;
+    }
+    
+    .safe-alternatives a:hover {
+        text-decoration: underline;
+    }
+    
+    @media (max-width: 768px) {
+        .delete-confirmation {
+            padding: 1rem;
+            margin: 1rem;
+        }
+        
+        .warning-section {
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .confirmation-actions {
+            flex-direction: column;
+        }
+        
+        .btn {
+            min-width: 100%;
+        }
+    }
+</style>
+{% endblock %}

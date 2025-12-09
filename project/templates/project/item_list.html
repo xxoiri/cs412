@@ -1,0 +1,86 @@
+<!-- project/item_list.html -->
+<!-- Amy Ho, aho@bu.edu -->
+
+{% extends 'project/base.html' %}
+
+{% block content %}
+<div class="container">
+    <!-- Page Header -->
+    <div class="page-header">
+        <h1>All Items</h1>
+        <p>Total: {{ items.count }} items</p>
+        <div class="header-actions">
+            <a href="{% url 'item-create' %}" class="btn btn-primary">
+                <span>+</span> Add New Item
+            </a>
+        </div>
+    </div>
+
+    <!-- Items List -->
+    <div class="table-responsive">
+        <table class="items-table">
+            <thead>
+                <tr>
+                    <th>Item Name</th>
+                    <th>Category</th>
+                    <th>Current Stock</th>
+                    <th>Minimum Required</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                <tr class="{% if item.current_quantity <= item.minimum_quantity %}low-stock-row{% endif %}">
+                    <td>
+                        <a href="{% url 'item-detail' item.pk %}" class="item-name">
+                            {{ item.name }}
+                        </a>
+                        {% if item.description %}
+                        <div class="item-description">
+                            {{ item.description|truncatechars:80 }}
+                        </div>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <span class="item-category">
+                            {{ item.category.name }}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="quantity-value {% if item.current_quantity <= item.minimum_quantity %}danger{% endif %}">
+                            {{ item.current_quantity }}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="quantity-value">
+                            {{ item.minimum_quantity }}
+                        </span>
+                    </td>
+                    <td>
+                        {% if item.current_quantity <= item.minimum_quantity %}
+                        <span class="status-badge status-warning">
+                            Low Stock
+                        </span>
+                        {% else %}
+                        <span class="status-badge status-ok">
+                            In Stock
+                        </span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="empty-state-cell">
+                        <div class="empty-state">
+                            <h3>No items yet</h3>
+                            <p>Get started by adding your first item!</p>
+                            <a href="{% url 'item-create' %}" class="btn btn-primary">Add First Item</a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

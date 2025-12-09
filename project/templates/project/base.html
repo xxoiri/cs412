@@ -1,0 +1,39 @@
+<!-- project/base.html -->
+ <!-- Amy Ho, aho@bu.edu -->
+
+{% load static %}
+<head>
+    <link rel="stylesheet" href="{% static 'project.css' %}">
+</head>
+<a href="{% url 'home-page' %}" class="header-link">
+    <div class="card mb-5">
+        <div class="card-body text-center">
+            <h1>Hobby Inventory Tracker</h1>
+        </div>
+    </div>
+</a>
+
+<body style="width: 100%; padding-bottom: 175px;">
+{% block content %}
+{% endblock %}
+</body>
+ 
+ <!-- Links -->
+ <div class="card mb-5" style="width: 100%; position:fixed; bottom: 0; margin-bottom: 0; border-radius: 0;">
+    <div class="card-body">
+        <div class="d-flex flex-wrap gap-3" style="justify-content: center;">
+            <a href="{% url 'category-list' %}" class="btn btn-secondary">
+                <i class="fas fa-plus"></i>All Categories
+            </a>
+            <a href="{% url 'item-list' %}" class="btn btn-secondary" style="margin-left: 10px;">
+                <i class="fas fa-shopping-cart" ></i>All Items
+            </a>
+            <a href="{% url 'usage-create' %}" class="btn btn-secondary" style="margin-left: 10px;">
+                <i class="fas fa-clipboard-list"></i>Log Usage
+            </a>
+            <a href="{% url 'category-create' %}" class="btn btn-secondary" style="margin-left: 10px;">
+                <i class="fas fa-tag"></i>Add Category
+            </a>
+        </div>
+    </div>
+</div>

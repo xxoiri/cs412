@@ -1,0 +1,138 @@
+<!-- project/category_form.html -->
+<!-- Amy Ho, aho@bu.edu -->
+
+{% extends 'project/base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="form-container">
+        <div class="form-header">
+            <h1>{% if form.instance.pk %}✏️ Edit Category{% else %}🏷️ Add New Category{% endif %}</h1>
+            <p>{% if form.instance.pk %}Update category details{% else %}Organize your items into categories{% endif %}</p>
+        </div>
+
+        <form method="post" class="form">
+            {% csrf_token %}
+            
+            {% if form.errors %}
+            <div class="form-errors">
+                <h3>Please correct the following errors:</h3>
+                <ul>
+                    {% for field in form %}
+                        {% for error in field.errors %}
+                            <li>{{ field.label }}: {{ error }}</li>
+                        {% endfor %}
+                    {% endfor %}
+                    {% for error in form.non_field_errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+
+            <div class="form-grid">
+                <!-- Name Field -->
+                <div class="form-group">
+                    <label for="{{ form.name.id_for_label }}">Category Name *</label>
+                    {{ form.name }}
+                    <small class="help-text">e.g., "Painting Supplies", "Drawing Tools"</small>
+                </div>
+
+                <!-- Description Field -->
+                <div class="form-group full-width">
+                    <label for="{{ form.description.id_for_label }}">Description</label>
+                    {{ form.description }}
+                    <small class="help-text">Optional: Describe what belongs in this category</small>
+                </div>
+            </div>
+
+            <!-- Items in Category (if editing) -->
+            {% if form.instance.pk and form.instance.item_set.all %}
+            <div class="category-items">
+                <h3>Items in this Category ({{ form.instance.item_set.count }})</h3>
+                <div class="items-list">
+                    {% for item in form.instance.item_set.all %}
+                    <div class="category-item">
+                        <a href="{% url 'item-detail' item.pk %}">{{ item.name }}</a>
+                        <span class="item-quantity">{{ item.current_quantity }} in stock</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="form-actions">
+                <button type="submit" class="btn primary">
+                    {% if form.instance.pk %}Update Category{% else %}Add Category{% endif %}
+                </button>
+                <a href="{% if form.instance.pk %}{% url 'category-detail' form.instance.pk %}{% else %}{% url 'category-list' %}{% endif %}" class="btn secondary">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .category-items {
+        background: #f8f9fa;
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin: 2rem 0;
+        border-left: 4px solid #667eea;
+    }
+    
+    .category-items h3 {
+        margin: 0 0 1rem 0;
+        color: #333;
+        font-size: 1.1rem;
+    }
+    
+    .items-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 0.5rem;
+    }
+    
+    .category-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem;
+        background: white;
+        border-radius: 4px;
+        border: 1px solid #e9ecef;
+    }
+    
+    .category-item a {
+        color: #333;
+        text-decoration: none;
+        font-weight: 500;
+    }
+    
+    .category-item a:hover {
+        color: #667eea;
+    }
+    
+    .item-quantity {
+        font-size: 0.8rem;
+        color: #666;
+        background: #e9ecef;
+        padding: 0.25rem 0.5rem;
+        border-radius: 10px;
+    }
+</style>
+
+<script>
+    // Auto-capitalize category names
+    document.addEventListener('DOMContentLoaded', function() {
+        const nameInput = document.getElementById('{{ form.name.id_for_label }}');
+        
+        if (nameInput) {
+            nameInput.addEventListener('input', function() {
+                this.value = this.value.charAt(0).toUpperCase() + this.value.slice(1);
+            });
+        }
+    });
+</script>
+{% endblock %}

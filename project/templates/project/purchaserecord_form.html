@@ -1,0 +1,81 @@
+<!-- project/purchaserecord_form.html -->
+<!-- Amy Ho, aho@bu.edu -->
+
+{% extends 'project/base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="form-container">
+        <div class="form-header">
+            <h1>{% if form.instance.pk %}✏️ Edit Purchase{% else %}🛒 Record Purchase{% endif %}</h1>
+            <p>{% if form.instance.pk %}Update purchase details{% else %}Add purchased items to inventory{% endif %}</p>
+        </div>
+
+        <form method="post" class="form">
+            {% csrf_token %}
+            
+            {% if form.errors %}
+            <div class="form-errors">
+                <h3>Please correct the following errors:</h3>
+                <ul>
+                    {% for error in form.non_field_errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+
+            <div class="form-grid">
+                <!-- Item Field -->
+                <div class="form-group">
+                    <label for="{{ form.item.id_for_label }}">Item *</label>
+                    {{ form.item }}
+                    {% if request.GET.item %}
+                        <script>
+                            document.addEventListener('DOMContentLoaded', function() {
+                                document.getElementById('{{ form.item.id_for_label }}').value = '{{ request.GET.item }}';
+                            });
+                        </script>
+                    {% endif %}
+                </div>
+
+                <!-- Purchase Date -->
+                <div class="form-group">
+                    <label for="{{ form.purchase_date.id_for_label }}">Purchase Date *</label>
+                    {{ form.purchase_date }}
+                </div>
+
+                <!-- Quantity -->
+                <div class="form-group">
+                    <label for="{{ form.quantity.id_for_label }}">Quantity *</label>
+                    {{ form.quantity }}
+                    <small class="help-text">Number of items purchased</small>
+                </div>
+
+                <!-- Unit Cost -->
+                <div class="form-group">
+                    <label for="{{ form.unit_cost.id_for_label }}">Unit Cost ($) *</label>
+                    {{ form.unit_cost }}
+                    <small class="help-text">Cost per item</small>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn primary">
+                    {% if form.instance.pk %}Update Purchase{% else %}Record Purchase{% endif %}
+                </button>
+                <a href="{% if form.instance.pk %}{% url 'purchase-list' %}{% else %}{% url 'item-list' %}{% endif %}" class="btn secondary">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .form-container {
+        max-width: 600px;
+        margin: 0 auto;
+    }
+</style>
+{% endblock %}

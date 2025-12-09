@@ -26,7 +26,7 @@ urlpatterns = [
     path("mini_insta/", include("mini_insta.urls")), # ASSIGN 3-7
     path("voter_analytics/", include("voter_analytics.urls")), # ASSIGN 3-7
     path("dadjokes/", include("dadjokes.urls")), # ASSIGN 10
-    # path("dadjokes/", include("dadjokes.urls")), # FINAL PROJ
+    path("project/", include("project.urls")), # FINAL PROJ
     
 ] 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

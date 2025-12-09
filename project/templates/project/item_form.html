@@ -1,0 +1,322 @@
+<!-- project/item_form.html -->
+<!-- Amy Ho, aho@bu.edu -->
+
+{% extends 'project/base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="form-container">
+        <div class="form-header">
+            <h1>{% if form.instance.pk %}✏️ Edit Item{% else %}Add New Item{% endif %}</h1>
+            <p>{% if form.instance.pk %}Update your item details{% else %}Add a new item to your inventory{% endif %}</p>
+        </div>
+
+        <form method="post" class="form">
+            {% csrf_token %}
+            
+            <!-- Form Errors -->
+            {% if form.errors %}
+            <div class="form-errors">
+                <h3>Please correct the following errors:</h3>
+                <ul>
+                    {% for field in form %}
+                        {% for error in field.errors %}
+                            <li>{{ field.label }}: {{ error }}</li>
+                        {% endfor %}
+                    {% endfor %}
+                    {% for error in form.non_field_errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+
+            <!-- Form Fields -->
+            <div class="form-grid">
+                <!-- Name Field -->
+                <div class="form-group">
+                    <label for="{{ form.name.id_for_label }}">Item Name</label>
+                    {{ form.name }}
+                    {% if form.name.help_text %}
+                        <small class="help-text">{{ form.name.help_text }}</small>
+                    {% endif %}
+                </div>
+
+                <!-- Category Field -->
+                <div class="form-group">
+                    <label for="{{ form.category.id_for_label }}">Category</label>
+                    {{ form.category }}
+                    <small class="help-text">Select a category or <a href="{% url 'category-create' %}?next={{ request.path }}">create a new one</a></small>
+                </div>
+
+                <!-- Quantity Fields -->
+                <div class="form-group">
+                    <label for="{{ form.current_quantity.id_for_label }}">Current Quantity</label>
+                    {{ form.current_quantity }}
+                    <small class="help-text">How many do you currently have?</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.minimum_quantity.id_for_label }}">Minimum Quantity</label>
+                    {{ form.minimum_quantity }}
+                    <small class="help-text">Alert when quantity falls below this number</small>
+                </div>
+
+                <!-- Description Field -->
+                <div class="form-group full-width">
+                    <label for="{{ form.description.id_for_label }}">Description</label>
+                    {{ form.description }}
+                    <small class="help-text">Optional: Add details about this item</small>
+                </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="form-actions">
+                <button type="submit" class="btn primary">
+                    {% if form.instance.pk %}Update Item{% else %}Add Item{% endif %}
+                </button>
+                <a href="{% if form.instance.pk %}{% url 'item-detail' form.instance.pk %}{% else %}{% url 'item-list' %}{% endif %}" class="btn secondary">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    /* Form Specific Styles */
+    .form-container {
+        max-width: 800px;
+        margin: 0 auto;
+        background: white;
+        padding: 2rem;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    
+    .form-header {
+        text-align: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 2px solid #e9ecef;
+    }
+    
+    .form-header h1 {
+        color: #333;
+        margin: 0 0 0.5rem 0;
+    }
+    
+    .form-header p {
+        color: #666;
+        margin: 0;
+    }
+    
+    .form-errors {
+        background: #f8d7da;
+        color: #721c24;
+        padding: 1rem;
+        border-radius: 6px;
+        margin-bottom: 1.5rem;
+        border-left: 4px solid #f5c6cb;
+    }
+    
+    .form-errors h3 {
+        margin: 0 0 0.5rem 0;
+        font-size: 1rem;
+    }
+    
+    .form-errors ul {
+        margin: 0;
+        padding-left: 1.5rem;
+    }
+    
+    .form-errors li {
+        margin: 0.25rem 0;
+    }
+    
+    .form {
+        margin-bottom: 2rem;
+    }
+    
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .form-group {
+        margin-bottom: 0;
+    }
+    
+    .form-group.full-width {
+        grid-column: 1 / -1;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        color: #333;
+    }
+    
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        width: 100%;
+        padding: 0.75rem;
+        border: 2px solid #e9ecef;
+        border-radius: 6px;
+        font-size: 1rem;
+        transition: border-color 0.3s;
+        background: white;
+    }
+    
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    
+    .form-group textarea {
+        min-height: 120px;
+        resize: vertical;
+        font-family: inherit;
+    }
+    
+    .help-text {
+        display: block;
+        margin-top: 0.25rem;
+        color: #666;
+        font-size: 0.85rem;
+        line-height: 1.4;
+    }
+    
+    .help-text a {
+        color: #667eea;
+        text-decoration: none;
+    }
+    
+    .help-text a:hover {
+        text-decoration: underline;
+    }
+    
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: flex-end;
+        padding-top: 1.5rem;
+        border-top: 2px solid #e9ecef;
+    }
+    
+    .form-actions .btn {
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+        font-weight: 500;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background 0.3s;
+        text-decoration: none;
+        text-align: center;
+    }
+    
+    .btn.primary {
+        background: #667eea;
+        color: white;
+    }
+    
+    .btn.primary:hover {
+        background: #5a67d8;
+    }
+    
+    .btn.secondary {
+        background: #6c757d;
+        color: white;
+    }
+    
+    .btn.secondary:hover {
+        background: #5a6268;
+    }
+    
+    .form-tips {
+        background: #e7f3ff;
+        padding: 1.5rem;
+        border-radius: 8px;
+        border-left: 4px solid #667eea;
+    }
+    
+    .form-tips h3 {
+        margin: 0 0 1rem 0;
+        color: #333;
+        font-size: 1.1rem;
+    }
+    
+    .form-tips ul {
+        margin: 0;
+        padding-left: 1.5rem;
+    }
+    
+    .form-tips li {
+        margin: 0.5rem 0;
+        color: #666;
+    }
+    
+    @media (max-width: 768px) {
+        .form-container {
+            padding: 1rem;
+        }
+        
+        .form-grid {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+        
+        .form-actions {
+            flex-direction: column;
+        }
+        
+        .form-actions .btn {
+            width: 100%;
+        }
+    }
+</style>
+
+<script>
+    // Auto-populate minimum quantity if empty
+    document.addEventListener('DOMContentLoaded', function() {
+        const currentQtyInput = document.getElementById('{{ form.current_quantity.id_for_label }}');
+        const minQtyInput = document.getElementById('{{ form.minimum_quantity.id_for_label }}');
+        
+        if (currentQtyInput && minQtyInput) {
+            // Suggest minimum quantity as 20% of current quantity
+            currentQtyInput.addEventListener('input', function() {
+                if (!minQtyInput.value) {
+                    const currentVal = parseInt(currentQtyInput.value) || 0;
+                    const suggestedMin = Math.max(1, Math.floor(currentVal * 0.2));
+                    minQtyInput.placeholder = 'Suggested: ' + suggestedMin;
+                }
+            });
+            
+            // Validate that minimum <= current
+            function validateQuantities() {
+                const current = parseInt(currentQtyInput.value) || 0;
+                const min = parseInt(minQtyInput.value) || 0;
+                
+                if (min > current) {
+                    minQtyInput.style.borderColor = '#ff6b6b';
+                    minQtyInput.title = 'Minimum quantity should not exceed current quantity';
+                } else {
+                    minQtyInput.style.borderColor = '';
+                    minQtyInput.title = '';
+                }
+            }
+            
+            currentQtyInput.addEventListener('change', validateQuantities);
+            minQtyInput.addEventListener('change', validateQuantities);
+        }
+    });
+</script>
+{% endblock %}

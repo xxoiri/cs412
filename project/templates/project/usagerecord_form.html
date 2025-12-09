@@ -1,0 +1,74 @@
+<!-- project/usagerecord_form.html -->
+<!-- Amy Ho, aho@bu.edu -->
+
+{% extends 'project/base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="form-container">
+        <div class="form-header">
+            <h1>{% if form.instance.pk %}✏️ Edit Usage{% else %}📝 Log Usage{% endif %}</h1>
+            <p>{% if form.instance.pk %}Update usage details{% else %}Record items you've used{% endif %}</p>
+        </div>
+
+        <form method="post" class="form">
+            {% csrf_token %}
+            
+            {% if form.errors %}
+            <div class="form-errors">
+                <h3>Please correct the following errors:</h3>
+                <ul>
+                    {% for error in form.non_field_errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+
+            <div class="form-grid">
+                <!-- Item Field -->
+                <div class="form-group">
+                    <label for="{{ form.item.id_for_label }}">Item *</label>
+                    {{ form.item }}
+                    {% if request.GET.item %}
+                        <script>
+                            document.addEventListener('DOMContentLoaded', function() {
+                                document.getElementById('{{ form.item.id_for_label }}').value = '{{ request.GET.item }}';
+                            });
+                        </script>
+                    {% endif %}
+                </div>
+
+                <!-- Usage Date -->
+                <div class="form-group">
+                    <label for="{{ form.usage_date.id_for_label }}">Usage Date *</label>
+                    {{ form.usage_date }}
+                </div>
+
+                <!-- Quantity Used -->
+                <div class="form-group">
+                    <label for="{{ form.quantity_used.id_for_label }}">Quantity Used *</label>
+                    {{ form.quantity_used }}
+                    <small class="help-text">Number of items used</small>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn primary">
+                    {% if form.instance.pk %}Update Usage{% else %}Log Usage{% endif %}
+                </button>
+                <a href="{% if form.instance.pk %}{% url 'usage-list' %}{% else %}{% url 'item-list' %}{% endif %}" class="btn secondary">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .form-container {
+        max-width: 600px;
+        margin: 0 auto;
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,80 @@
+<!-- project/show_category.html -->
+<!-- Amy Ho, aho@bu.edu -->
+
+{% extends 'project/base.html' %}
+
+{% block content %}
+<div class="container">
+    <!-- Category Header -->
+    <div class="category-detail-header">
+        <div class="header-content">
+            <h1>{{ category.name }}</h1>
+            {% if category.description %}
+                <p class="category-description">{{ category.description }}</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Items in Category -->
+    <div class="category-items-section">
+        <div style="position: relative;">
+            <h2 style="display: inline-block; margin: 0;">Items in this Category: {{category.item_set.count}}</h2>
+            <a href="{% url 'item-create' %}" class="btn" style="position: absolute; right: 0; top: 0;">Add Item</a>
+        </div>
+        
+        {% if category.item_set.all %}
+        <div class="items-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Item Name</th>
+                        <th>Current Quantity</th>
+                        <th>Minimum Quantity</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in category.item_set.all %}
+                    <tr class="{% if item.current_quantity <= item.minimum_quantity %}low-stock-row{% endif %}">
+                        <td>
+                            <a href="{% url 'item-detail' item.pk %}">{{ item.name }}</a>
+                            {% if item.description %}
+                                <small class="item-description">{{ item.description|truncatechars:50 }}</small>
+                            {% endif %}
+                        </td>
+                        <td>{{ item.current_quantity }}</td>
+                        <td>{{ item.minimum_quantity }}</td>
+                        <td>
+                            {% if item.current_quantity <= item.minimum_quantity %}
+                                <span class="status-badge danger">Low Stock</span>
+                            {% else %}
+                                <span class="status-badge success">In Stock</span>
+                            {% endif %}
+                        </td>
+                        <td class="table-actions">
+                            <a href="{% url 'item-detail' item.pk %}" class="action-link">View</a>
+                            <a href="{% url 'purchase-create' %}?item={{ item.pk }}" class="action-link">Purchase</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <h3>No items in this category yet</h3>
+            <p>Add items to get started with inventory tracking.</p>
+            <a href="{% url 'item-create' %}?category={{ category.pk }}" class="btn primary">Add First Item</a>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Navigation -->
+    <div class="navigation-links" style="margin-top: 1rem; display: flex; gap: 1rem;">
+        <a href="{% url 'category-list' %}" class="btn">← Back to All Categories</a>
+        <a href="{% url 'home-page' %}" class="btn">Back to Home</a>
+    </div>
+</div>
+
+{% endblock %}

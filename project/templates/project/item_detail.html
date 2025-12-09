@@ -1,0 +1,434 @@
+<!-- project/item_detail.html -->
+<!-- Amy Ho, aho@bu.edu -->
+
+{% extends 'project/base.html' %}
+
+{% block content %}
+<div class="container">
+    <!-- Item Header -->
+    <div class="item-detail-header">
+        <div class="header-content">
+            <h1>{{ item.name }}</h1>
+            <div class="item-meta">
+                <span class="category-badge">{{ item.category.name }}</span>
+                <span class="status-badge {% if item.current_quantity <= item.minimum_quantity %}low-stock{% else %}in-stock{% endif %}">
+                    {% if item.current_quantity <= item.minimum_quantity %}⚠️ Low Stock{% else %}✓ In Stock{% endif %}
+                </span>
+            </div>
+        </div>
+        <div class="header-actions">
+            <a href="{% url 'item-update' item.pk %}" class="btn">Edit</a>
+            <a href="{% url 'item-delete' item.pk %}" class="btn danger">Delete</a>
+            <a href="{% url 'purchase-create' %}?item={{ item.pk }}" class="btn primary">Add Purchase</a>
+            <a href="{% url 'usage-create' %}?item={{ item.pk }}" class="btn">Log Usage</a>
+        </div>
+    </div>
+
+    <!-- Item Content -->
+    <div class="item-detail-content">
+        <!-- Description -->
+        <div class="detail-section">
+            <h2>Description</h2>
+            <div class="description-box">
+                {% if item.description %}
+                    {{ item.description|linebreaks }}
+                {% else %}
+                    <p class="no-description">No description provided.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Stock Information -->
+        <div class="detail-section">
+            <h2>Stock Information</h2>
+            <div class="stock-grid">
+                <div class="stock-card">
+                    <h3>Current Quantity</h3>
+                    <p class="stock-number {% if item.current_quantity <= item.minimum_quantity %}danger{% endif %}">
+                        {{ item.current_quantity }}
+                    </p>
+                </div>
+                <div class="stock-card">
+                    <h3>Minimum Required</h3>
+                    <p class="stock-number">{{ item.minimum_quantity }}</p>
+                </div>
+                <div class="stock-card">
+                    <h3>Status</h3>
+                    <p class="stock-status {% if item.current_quantity <= item.minimum_quantity %}danger{% else %}success{% endif %}">
+                        {% if item.current_quantity <= item.minimum_quantity %}
+                            Reorder Soon
+                        {% else %}
+                            Sufficient Stock
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Purchase History -->
+        <div class="detail-section">
+            <div class="section-header">
+                <h2>Purchase History</h2>
+                <a href="{% url 'purchase-create' %}?item={{ item.pk }}" class="btn small">+ Add Purchase</a>
+            </div>
+            {% if item.purchases.all %}
+            <div class="history-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Quantity</th>
+                            <th>Unit Cost</th>
+                            <th>Total Cost</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for purchase in item.purchases.all %}
+                        <tr>
+                            <td>{{ purchase.purchase_date }}</td>
+                            <td>{{ purchase.quantity }}</td>
+                            <td>${{ purchase.unit_cost }}</td>
+                            <td>${{ purchase.total_cost }}</td>
+                            <td class="table-actions">
+                                <a href="{% url 'purchase-update' purchase.pk %}" class="action-link">Edit</a>
+                                <a href="{% url 'purchase-delete' purchase.pk %}" class="action-link danger">Delete</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <p>No purchase records yet.</p>
+                <a href="{% url 'purchase-create' %}?item={{ item.pk }}" class="btn small">Add First Purchase</a>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Usage History -->
+        <div class="detail-section">
+            <div class="section-header">
+                <h2>Usage History</h2>
+                <a href="{% url 'usage-create' %}?item={{ item.pk }}" class="btn small">+ Log Usage</a>
+            </div>
+            {% if item.usage_records.all %}
+            <div class="history-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Quantity Used</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for usage in item.usage_records.all %}
+                        <tr>
+                            <td>{{ usage.usage_date }}</td>
+                            <td>{{ usage.quantity_used }}</td>
+                            <td class="table-actions">
+                                <a href="{% url 'usage-update' usage.pk %}" class="action-link">Edit</a>
+                                <a href="{% url 'usage-delete' usage.pk %}" class="action-link danger">Delete</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <p>No usage records yet.</p>
+                <a href="{% url 'usage-create' %}?item={{ item.pk }}" class="btn small">Log First Usage</a>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Back Navigation -->
+        <div class="navigation-links">
+            <a href="{% url 'item-list' %}" class="btn">← Back to All Items</a>
+            <a href="{% url 'category-detail' item.category.pk %}" class="btn">View Category →</a>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Item Detail Specific Styles */
+    .item-detail-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 2px solid #e9ecef;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    
+    .header-content h1 {
+        color: #333;
+        margin: 0 0 0.5rem 0;
+        font-size: 2rem;
+    }
+    
+    .item-meta {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+    
+    .category-badge {
+        background: #667eea;
+        color: white;
+        padding: 0.25rem 1rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+    }
+    
+    .status-badge {
+        padding: 0.25rem 1rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+    
+    .status-badge.in-stock {
+        background: #d4edda;
+        color: #155724;
+    }
+    
+    .status-badge.low-stock {
+        background: #fff3cd;
+        color: #856404;
+    }
+    
+    .header-actions {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+    
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        color: white;
+        text-decoration: none;
+        border-radius: 6px;
+        font-weight: 500;
+        transition: background 0.3s;
+        border: none;
+        cursor: pointer;
+    }
+    
+    .btn:hover {
+        background: #5a6268;
+    }
+    
+    .btn.primary:hover {
+        background: #5a67d8;
+    }
+    
+    .btn.danger {
+        background: #ff6b6b;
+    }
+    
+    .btn.danger:hover {
+        background: #ff5252;
+    }
+    
+    .btn.small {
+        padding: 0.25rem 0.75rem;
+        font-size: 0.9rem;
+    }
+    
+    .item-detail-content {
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+    
+    .detail-section {
+        margin-bottom: 3rem;
+        background: white;
+        padding: 1.5rem;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .detail-section h2 {
+        color: #333;
+        margin: 0 0 1rem 0;
+        font-size: 1.5rem;
+    }
+    
+    .description-box {
+        background: #f8f9fa;
+        padding: 1.5rem;
+        border-radius: 8px;
+        line-height: 1.6;
+    }
+    
+    .no-description {
+        color: #666;
+        font-style: italic;
+    }
+    
+    .stock-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-top: 1rem;
+    }
+    
+    .stock-card {
+        text-align: center;
+        padding: 1.5rem;
+        background: white;
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        transition: border-color 0.3s;
+    }
+    
+    .stock-card:hover {
+        border-color: #667eea;
+    }
+    
+    .stock-card h3 {
+        color: #666;
+        margin: 0 0 0.5rem 0;
+        font-size: 1rem;
+        font-weight: 500;
+    }
+    
+    .stock-number {
+        font-size: 2rem;
+        font-weight: bold;
+        margin: 0;
+        color: #667eea;
+    }
+    
+    .stock-number.danger {
+        color: #ff6b6b;
+    }
+    
+    .stock-status {
+        font-size: 1.25rem;
+        font-weight: bold;
+        margin: 0;
+    }
+    
+    .stock-status.success {
+        color: #28a745;
+    }
+    
+    .stock-status.danger {
+        color: #ff6b6b;
+    }
+    
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    
+    .history-table {
+        overflow-x: auto;
+    }
+    
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+    }
+    
+    th {
+        background: #f8f9fa;
+        padding: 1rem;
+        text-align: left;
+        font-weight: 600;
+        color: #333;
+        border-bottom: 2px solid #e9ecef;
+    }
+    
+    td {
+        padding: 1rem;
+        border-bottom: 1px solid #e9ecef;
+        color: #666;
+    }
+    
+    tr:hover {
+        background: #f8f9fa;
+    }
+    
+    .table-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+    
+    .action-link {
+        text-decoration: none;
+        font-size: 0.9rem;
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        transition: background 0.3s;
+    }
+    
+    .action-link:hover {
+        background: #e9ecef;
+    }
+    
+    .action-link.danger {
+        color: #ff6b6b;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 2rem;
+        background: #f8f9fa;
+        border-radius: 8px;
+        color: #666;
+    }
+    
+    .navigation-links {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 3rem;
+        padding-top: 1.5rem;
+        border-top: 2px solid #e9ecef;
+    }
+    
+    @media (max-width: 768px) {
+        .item-detail-header {
+            flex-direction: column;
+        }
+        
+        .header-actions {
+            width: 100%;
+            justify-content: flex-start;
+        }
+        
+        .stock-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .navigation-links {
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        table {
+            font-size: 0.9rem;
+        }
+        
+        th, td {
+            padding: 0.75rem;
+        }
+    }
+</style>
+{% endblock %}
