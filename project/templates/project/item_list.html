@@ -16,8 +16,49 @@
         </div>
     </div>
 
+        <!-- Search Form -->
+        <form method="GET" action="{% url 'item-list' %}" class="form">
+            <div class="form-grid">
+                <!-- Search Input -->
+                <div class="form-group">
+                    <label for="search">Search Items</label>
+                    <div class="search-input-group" style="display: flex;">
+                        <input type="text" 
+                               id="search"
+                               name="search" 
+                               class="form-control" 
+                               placeholder="Search by name, description, or category..." 
+                               value="{{ search_query }}">
+                        <button type="submit" class="btn btn-primary" style="margin-left: 10px; border-radius: var(--radius-md);">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                            </svg>
+                            Search
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Category Filter -->
+                <div class="form-group">
+                    <label for="category">Filter by Category</label>
+                    <select id="category" name="category" class="form-control" onchange="this.form.submit()">
+                        <option value="all" {% if selected_category == 'all' %}selected{% endif %}>All Categories</option>
+                        {% for category in all_categories %}
+                        <option value="{{ category.id }}" 
+                                {% if selected_category == category.id|stringformat:"i" %}selected{% endif %}>
+                            {{ category.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </form>
+    </div>
+
+
     <!-- Items List -->
-    <div class="table-responsive">
+    <div class="detail-section">
         <table class="items-table">
             <thead>
                 <tr>
@@ -82,4 +123,70 @@
         </table>
     </div>
 </div>
+
+<style>
+    .search-filters-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 15px;
+    }
+    
+    .search-filters-table th {
+        width: 200px;
+        text-align: right;
+        padding-right: 20px;
+        font-weight: 600;
+        color: var(--text-color);
+        vertical-align: top;
+        padding-top: 12px;
+    }
+    
+    .search-filters-table td {
+        padding: 10px 0;
+    }
+    
+    .checkbox-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .checkbox-label {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+    }
+    
+    .checkbox-label input[type="radio"] {
+        margin-right: 10px;
+        width: 16px;
+        height: 16px;
+    }
+    
+    .checkbox-label span {
+        color: var(--text-color);
+    }
+    
+    .checkbox-label .text-danger {
+        color: var(--danger-color);
+    }
+    
+    .range-filters {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .range-filters .form-control {
+        display: inline-block;
+    }
+    
+    .ml-3 {
+        margin-left: 15px;
+    }
+    
+    .border-top {
+        border-top: 1px solid var(--border-color);
+    }
+    </style>    
 {% endblock %}

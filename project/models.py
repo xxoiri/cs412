@@ -31,7 +31,7 @@ class Category(models.Model):
 
 class Item(models.Model):
     '''Represents the items that we want to purchase/already have.'''
-    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name="item_set")
     name = models.CharField(max_length=200)
     description = models.TextField(blank=True)
     current_quantity = models.PositiveIntegerField(default=0)

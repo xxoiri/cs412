@@ -8,6 +8,7 @@ from .models import Category, Item, PurchaseRecord, UsageRecord
 from .forms import CategoryForm, ItemForm, PurchaseRecordForm, UsageRecordForm
 from django.shortcuts import redirect
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 # Home Page
 class HomeView(TemplateView):
@@ -65,33 +66,6 @@ class CategoryDeleteView(DeleteView):
     model = Category
     success_url = reverse_lazy('category-list')
     template_name = 'project/category_confirm_delete.html'
-    
-    def post(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        
-        # Check if category has items
-        if self.object.item_set.count() > 0:
-            # Reassign to another category
-            new_category_id = request.POST.get('new_category')
-            if new_category_id:
-                new_category = Category.objects.get(id=new_category_id)
-                self.object.item_set.update(category=new_category)
-                messages.success(request, f'Items moved to {new_category.name}')
-            
-            # Delete all items
-            elif request.POST.get('delete_items') == 'true':
-                self.object.item_set.all().delete()
-                messages.warning(request, 'All items in category deleted')
-            
-            else:
-                # Show error if no action chosen
-                messages.error(request, 'Category has items. Choose an action.')
-                return redirect('category-delete', pk=self.object.pk)
-        
-        # Delete
-        self.object.delete()
-        messages.success(request, 'Category deleted successfully')
-        return redirect(self.success_url)
 
 # Item Views
 class ItemListView(ListView):
@@ -100,7 +74,37 @@ class ItemListView(ListView):
     template_name = 'project/item_list.html'
     
     def get_queryset(self):
-        return Item.objects.select_related('category').all()
+        queryset = Item.objects.select_related('category').all()
+        
+        # Get search parameter from GET request
+        search_query = self.request.GET.get('search')
+        if search_query:
+            queryset = queryset.filter(
+                Q(name__icontains=search_query) | 
+                Q(description__icontains=search_query) |
+                Q(category__name__icontains=search_query)
+            )
+        
+        # Get category filter from GET request
+        category_filter = self.request.GET.get('category')
+        if category_filter and category_filter != 'all':
+            queryset = queryset.filter(category_id=category_filter)
+        
+        return queryset.order_by('name')
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        # Add search query to context
+        context['search_query'] = self.request.GET.get('search', '')
+        
+        # Add category filter to context
+        context['selected_category'] = self.request.GET.get('category', 'all')
+        
+        # Add all categories for filter dropdown
+        context['all_categories'] = Category.objects.all()
+        
+        return context
 
 class ItemDetailView(DetailView):
     model = Item
