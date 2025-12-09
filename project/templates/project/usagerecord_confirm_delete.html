@@ -17,7 +17,7 @@
                 <p><strong>Usage Date:</strong> {{ object.usage_date }}</p>
                 <p><strong>Quantity Used:</strong> {{ object.quantity_used }}</p>
                 <p><strong>Current Stock:</strong> {{ object.item.current_quantity }}</p>
-                {% if object.item.current_quantity <= object.item.minimum_quantity %}
+                {% if object.item.current_quantity < object.item.minimum_quantity %}
                     <p class="low-stock-warning">⚠️ This item is already low on stock!</p>
                 {% endif %}
             </div>

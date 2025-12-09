@@ -28,7 +28,7 @@
             </thead>
             <tbody>
                 {% for usage in usage_records %}
-                <tr class="{% if usage.item.current_quantity <= usage.item.minimum_quantity %}low-stock-row{% endif %}">
+                <tr class="{% if usage.item.current_quantity < usage.item.minimum_quantity %}low-stock-row{% endif %}">
                     <td>{{ usage.usage_date }}</td>
                     <td>
                         <a href="{% url 'item-detail' usage.item.pk %}">{{ usage.item.name }}</a>
@@ -36,7 +36,7 @@
                     <td>{{ usage.item.category.name }}</td>
                     <td>{{ usage.quantity_used }}</td>
                     <td>
-                        <span class="stock-indicator {% if usage.item.current_quantity <= usage.item.minimum_quantity %}danger{% endif %}">
+                        <span class="stock-indicator {% if usage.item.current_quantity < usage.item.minimum_quantity %}danger{% endif %}">
                             {{ usage.item.current_quantity }}
                         </span>
                     </td>
