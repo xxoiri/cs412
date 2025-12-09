@@ -7,7 +7,7 @@
 <div class="container">
     <div class="delete-confirmation">
         <div class="confirmation-header">
-            <h1>🗑️ Delete Usage Record</h1>
+            <h1>Delete Usage Record</h1>
             <p>Please confirm this action</p>
         </div>
 
@@ -23,23 +23,6 @@
             </div>
         </div>
 
-        <div class="warning-section">
-            <div class="warning-icon">⚠️</div>
-            <div class="warning-content">
-                <h3>Important: This will affect inventory!</h3>
-                <p>Deleting this usage record will:</p>
-                <ul>
-                    <li>Increase the item's current quantity by {{ object.quantity_used }}</li>
-                    <li>Affect inventory accuracy and low stock alerts</li>
-                    <li>This action cannot be undone</li>
-                </ul>
-                <p class="current-stock">
-                    After deletion, {{ object.item.name }} will have: 
-                    <strong>{{ object.item.current_quantity|add:object.quantity_used }}</strong> items
-                </p>
-            </div>
-        </div>
-
         <form method="post" class="confirmation-form">
             {% csrf_token %}
             
@@ -50,11 +33,6 @@
                 <a href="{% url 'usage-list' %}" class="btn secondary">
                     No, Go Back
                 </a>
-            </div>
-
-            <div class="safe-alternatives">
-                <p><strong>Consider editing instead:</strong></p>
-                <p>If this usage was recorded incorrectly, you might want to <a href="{% url 'usage-update' object.pk %}">edit the usage details</a> instead of deleting it.</p>
             </div>
         </form>
     </div>
