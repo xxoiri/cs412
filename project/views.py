@@ -243,6 +243,22 @@ class UsageRecordListView(ListView):
     model = UsageRecord
     context_object_name = 'usage_records'
     template_name = 'project/usagerecord_list.html'
+    
+    def get_queryset(self):
+        return UsageRecord.objects.select_related('item', 'item__category').order_by('-usage_date')
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        # Simple calculations
+        usage_records = context['usage_records']
+        total_used = usage_records.aggregate(total=Sum('quantity_used'))['total'] or 0
+        
+        context['total_used'] = total_used
+        context['unique_items'] = usage_records.values('item').distinct().count()
+        
+        return context
+
 
 class UsageRecordCreateView(CreateView):
     model = UsageRecord
