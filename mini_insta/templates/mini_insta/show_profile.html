@@ -1,26 +1,50 @@
 <!-- mini_insta/show_profile.html -->
-<!-- by Amy Ho, aho@bu.edu -->
-
+ <!-- by Amy Ho, aho@bu.edu -->
 {% extends 'mini_insta/base.html' %}
 
 {% block content %}
-<body>
-    <!-- Profile Info -->
-    <div class="container">
+<div class="container">
+    <!-- Profile Card -->
+    <div class="profile-card">
+        <!-- Profile Header -->
         <div class="profile-header">
-            <img src="{{profile.profile_image_url}}" alt="{{ profile.username }}" class="profile-avatar">
-
-            <div class="profile-info">
-                <h1 class="username">@{{ profile.username }}</h1>
+            <div class="profile-avatar-section">
+                <img src="{{profile.profile_image_url}}" alt="{{ profile.username }}" class="profile-avatar-large">
+            </div>
+            
+            <div class="profile-info-section">
+                <div class="profile-username-section">
+                    <h1 class="username">@{{ profile.username }}</h1>
+                    
+                    {% if user.is_authenticated and user == profile.user %}
+                        <a href="{% url 'update_profile' %}" class="btn btn-edit-profile">Edit Profile</a>
+                    {% endif %}
+                    
+                    <!-- Follow/Unfollow Button for other users -->
+                    {% if user.is_authenticated %}
+                        {% if current_profile and current_profile != profile %}
+                            {% if current_profile in profile.get_followers %}
+                                <a href="{% url 'delete_follow' profile.pk %}" class="btn btn-unfollow">Unfollow</a>
+                            {% else %}
+                                <a href="{% url 'follow_profile' profile.pk %}" class="btn btn-follow">Follow</a>
+                            {% endif %}
+                        {% endif %}
+                    {% endif %}
+                </div>
                 
+                <!-- Profile Stats -->
                 <div class="profile-stats">
+                    <div class="stat">
+                        <span class="stat-number">{{ profile.get_all_posts.count }}</span>
+                        <span class="stat-label">posts</span>
+                    </div>
                     <div class="stat">
                         <span class="stat-number">
                             <a href="{% url 'show_followers' profile.pk %}">  
-                            {{ profile.get_num_followers }}
+                                {{ profile.get_num_followers }}
                             </a>
                         </span>
-                        <div class="stat-label">followers</div>
+                        <span class="stat-label">followers</span>
                     </div>
                     <div class="stat">
                         <span class="stat-number">
@@ -28,65 +52,431 @@
                                 {{ profile.get_num_following }}
                             </a>
                         </span>
-                        <div class="stat-label">following</div>
+                        <span class="stat-label">following</span>
                     </div>
-                </div> 
-                <div class="bio-section">
-                    <h4 class="display_name">{{profile.display_name}}</h4>
-                    <p class="bio">{{ profile.bio_text }}</p>
-                    <p class="join-date">Joined: {{ profile.join_date }}</p>
                 </div>
-                {% if user.is_authenticated and user == profile.user %}
-                <h3>
-                    <a href="{% url 'update_profile' %}">Update Profile</a>
-                </h3>
-                {% endif %}
+                
+                <!-- Bio Section -->
+                <div class="bio-section">
+                    {% if profile.display_name %}
+                        <h4 class="display-name">{{profile.display_name}}</h4>
+                    {% endif %}
+                    {% if profile.bio_text %}
+                        <p class="bio">{{ profile.bio_text }}</p>
+                    {% endif %}
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Follow and unfollow button -->
-    {% if user.is_authenticated %}
-        {% if current_profile and current_profile != profile %}
-            {% if current_profile in profile.get_followers %}
-                <a href="{% url 'delete_follow' profile.pk %}" class="btn btn-unfollow">Unfollow</a>
-            {% else %}
-                <a href="{% url 'follow_profile' profile.pk %}" class="btn btn-follow">Follow</a>
-            {% endif %}
-        {% endif %}
-    {% endif %}
-
     <!-- Tabs Navigation -->
     <div class="profile-tabs">
-        <a href="#" class="tab active">POSTS</a>
-        <a href="#" class="tab">SAVED</a>
-        <a href="#" class="tab">TAGGED</a>
+        <a href="#" class="tab active">
+            <i class="fas fa-th"></i> POSTS
+        </a>
     </div>
     
-    <!-- Posts -->
+    <!-- Posts Grid - Instagram Style -->
     <div class="posts-grid">
         {% for post in profile.get_all_posts %}
-            <div class="post">
-                {% with post.get_all_photos.first as first_photo %}
-                    {% if first_photo %}
-                        <a href="{% url 'show_post' post.pk %}">
-                            <img src="{{ first_photo.get_image_url }}" alt="Post image" class="post-image">
-                        </a>
-                    {% else %}
-                        <a href="{% url 'show_post' post.pk %}">
-                            <img src="/media/no_image.png" alt="No Image Available" width="100%">
-                        </a>
-                    {% endif %}
-                {% endwith %}
+            <div class="post-grid-item">
+                <a href="{% url 'show_post' post.pk %}" class="post-link">
+                    {% with post.get_all_photos.first as first_photo %}
+                        {% if first_photo %}
+                            <img src="{{ first_photo.get_image_url }}" alt="Post image" class="post-grid-image">
+                        {% else %}
+                            <img src="/media/no_image.png" alt="No Image Available" class="post-grid-image">
+                        {% endif %}
+                    {% endwith %}
+                    
+                    <!-- Hover -->
+                    <div class="post-grid-overlay">
+                        <div class="post-grid-stats">
+                        </div>
+                    </div>
+                </a>
             </div>
         {% empty %}
-            <div class="no-posts">
+            <!-- Empty State -->
+            <div class="empty-grid">
+                <div class="empty-icon">
+                    <i class="fas fa-camera"></i>
+                </div>
                 <h3>No Posts Yet</h3>
+                {% if user.is_authenticated and user == profile.user %}
+                <p>Share your first photo or video</p>
+                <a href="#" class="btn btn-primary">Upload Your First Post</a>
+                {% else %}
+                <p>@{{ profile.username }} hasn't shared any posts yet.</p>
+                {% endif %}
             </div>
         {% endfor %}
     </div>
-</body>
+</div>
 
+<style>
+/* Container */
+.container {
+    max-width: 935px;
+    margin: 0 auto;
+    padding: 30px 20px;
+}
 
+/* Profile Card */
+.profile-card {
+    margin-bottom: 44px;
+}
 
+.profile-header {
+    display: flex;
+    margin-bottom: 44px;
+}
+
+.profile-avatar-section {
+    flex: 0 0 291px;
+    display: flex;
+    justify-content: center;
+    padding-right: 30px;
+}
+
+.profile-avatar-large {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid #dbdbdb;
+}
+
+.profile-info-section {
+    flex: 1;
+}
+
+/* Username Section */
+.profile-username-section {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.profile-username-section h1 {
+    font-size: 28px;
+    font-weight: 300;
+    margin: 0;
+    margin-right: 20px;
+}
+
+.btn-edit-profile, .btn-follow, .btn-unfollow {
+    padding: 6px 24px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.btn-edit-profile {
+    background-color: transparent;
+    color: #262626;
+    border: 1px solid #dbdbdb;
+}
+
+.btn-edit-profile:hover {
+    background-color: #fafafa;
+    text-decoration: none;
+}
+
+.btn-follow {
+    background-color: #0095f6;
+    color: white;
+    border: none;
+}
+
+.btn-follow:hover {
+    background-color: #0074cc;
+    color: white;
+    text-decoration: none;
+}
+
+.btn-unfollow {
+    background-color: transparent;
+    color: #262626;
+    border: 1px solid #dbdbdb;
+}
+
+.btn-unfollow:hover {
+    background-color: #fafafa;
+    text-decoration: none;
+}
+
+/* Profile Stats */
+.profile-stats {
+    display: flex;
+    margin-bottom: 20px;
+}
+
+.stat {
+    margin-right: 40px;
+    font-size: 16px;
+}
+
+.stat-number {
+    font-weight: 600;
+    margin-right: 5px;
+}
+
+.stat-number a {
+    color: #262626;
+    text-decoration: none;
+}
+
+.stat-number a:hover {
+    color: #262626;
+    text-decoration: none;
+}
+
+.stat-label {
+    color: #262626;
+}
+
+/* Bio Section */
+.bio-section {
+    line-height: 1.5;
+}
+
+.display-name {
+    font-weight: 600;
+    margin: 0 0 5px 0;
+    font-size: 16px;
+}
+
+.bio {
+    margin: 0;
+    color: #262626;
+    font-size: 16px;
+}
+
+/* Tabs Navigation */
+.profile-tabs {
+    display: flex;
+    justify-content: center;
+    border-top: 1px solid #dbdbdb;
+    margin-bottom: 0;
+}
+
+.tab {
+    display: flex;
+    align-items: center;
+    padding: 16px 0;
+    margin: 0 30px;
+    text-decoration: none;
+    color: #8e8e8e;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-top: 1px solid transparent;
+    margin-top: -1px;
+}
+
+.tab i {
+    margin-right: 6px;
+    font-size: 12px;
+}
+
+.tab.active {
+    color: #262626;
+    border-top: 1px solid #262626;
+}
+
+.tab:hover {
+    color: #262626;
+    text-decoration: none;
+}
+
+/* Posts Grid - Instagram Style */
+.posts-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px;
+    margin-top: 0;
+}
+
+@media (max-width: 736px) {
+    .posts-grid {
+        gap: 3px;
+    }
+}
+
+.post-grid-item {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    background-color: #fafafa;
+}
+
+.post-grid-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.post-link {
+    display: block;
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+/* Hover Overlay */
+.post-grid-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.post-grid-item:hover .post-grid-overlay {
+    opacity: 1;
+}
+
+.post-grid-stats {
+    display: flex;
+    align-items: center;
+    color: white;
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.grid-stat {
+    display: flex;
+    align-items: center;
+    margin: 0 10px;
+}
+
+.grid-stat i {
+    margin-right: 5px;
+    font-size: 18px;
+}
+
+/* Empty State */
+.empty-grid {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 60px 20px;
+    color: #8e8e8e;
+}
+
+.empty-icon {
+    font-size: 64px;
+    margin-bottom: 20px;
+    color: #dbdbdb;
+}
+
+.empty-grid h3 {
+    font-size: 28px;
+    font-weight: 300;
+    margin-bottom: 10px;
+    color: #262626;
+}
+
+.empty-grid p {
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+
+.btn-primary {
+    background-color: #0095f6;
+    color: white;
+    padding: 6px 24px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    display: inline-block;
+}
+
+.btn-primary:hover {
+    background-color: #0074cc;
+    color: white;
+    text-decoration: none;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .profile-header {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    
+    .profile-avatar-section {
+        flex: 0 0 auto;
+        padding-right: 0;
+        margin-bottom: 20px;
+    }
+    
+    .profile-avatar-large {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .profile-username-section {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .profile-stats {
+        justify-content: center;
+    }
+    
+    .stat {
+        margin: 0 20px;
+    }
+    
+    .profile-tabs {
+        margin-top: 20px;
+    }
+    
+    .tab {
+        margin: 0 15px;
+    }
+    
+    .posts-grid {
+        gap: 2px;
+    }
+}
+
+/* For very small screens */
+@media (max-width: 480px) {
+    .container {
+        padding: 15px 10px;
+    }
+    
+    .profile-avatar-large {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .profile-username-section h1 {
+        font-size: 24px;
+    }
+    
+    .tab {
+        margin: 0 10px;
+        font-size: 11px;
+    }
+    
+    .tab i {
+        font-size: 11px;
+    }
+}
+</style>
 {% endblock %}

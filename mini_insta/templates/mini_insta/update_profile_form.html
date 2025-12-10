@@ -1,33 +1,386 @@
 <!-- mini_insta/update_profile_form.html -->
- <!-- form to update an existing profile. -->
-  <!-- by Amy Ho, aho@bu.edu -->
+{% extends 'mini_insta/base.html' %}
 
- {% extends 'mini_insta/base.html' %}
+{% block content %}
+<div class="container">
+    <div class="edit-profile-card">
+        <div class="edit-profile-header">
+            <h1>Edit Profile</h1>
+            <p class="profile-username">@{{ profile.username }}</p>
+        </div>
 
- {% block content %}
- <h1>Update @{{ profile.username }}</h1>
+        <div class="current-profile-preview">
+            <div class="preview-avatar">
+                {% if profile.profile_image_url %}
+                    <img src="{{ profile.profile_image_url }}" alt="Current profile" class="profile-preview-image">
+                {% else %}
+                    <div class="profile-preview-placeholder">
+                        {{ profile.username|first|upper }}
+                    </div>
+                {% endif %}
+            </div>
+            <div class="preview-info">
+                <h3 class="preview-username">@{{ profile.username }}</h3>
+                <p class="preview-display-name">
+                    {{ form.display_name.value|default:"No display name" }}
+                </p>
+            </div>
+        </div>
 
-<form action="{% url 'update_profile' %}" method="POST" 
-      enctype="multipart/form-data">
+        <form action="{% url 'update_profile' %}" method="POST" 
+              enctype="multipart/form-data" class="edit-profile-form">
+            {% csrf_token %}
 
-    {% csrf_token %}
+            <div class="form-section">
+                <div class="form-group">
+                    <label for="{{ form.display_name.id_for_label }}" class="form-label">
+                        <i class="fas fa-user"></i> Display Name
+                    </label>
+                    <div class="input-with-description">
+                        {{ form.display_name }}
+                    </div>
+                </div>
 
-    <div class="form-group">
-        <label>Display Name:</label>
-        {{ form.display_name }}
+                <div class="form-group">
+                    <label for="{{ form.bio_text.id_for_label }}" class="form-label">
+                        <i class="fas fa-edit"></i> Bio
+                    </label>
+                    <div class="input-with-description">
+                        {{ form.bio_text }}
+                        <p class="form-description">
+                            Your personal bio. You can @mention other accounts to link to them.
+                        </p>
+                    </div>
+                </div>
 
-        <label>Bio Text:</label>
-        {{ form.bio_text }}
+                <div class="form-group">
+                    <label for="{{ form.profile_image_url.id_for_label }}" class="form-label">
+                        <i class="fas fa-image"></i> Profile Image URL
+                    </label>
+                    <div class="input-with-description">
+                        {{ form.profile_image_url }}
+                        <p class="form-description">
+                            Enter a URL for your profile picture.
+                        </p>
+                    </div>
+                </div>
+            </div>
 
-        <label>Profile Image URL:</label>
-        {{ form.profile_image_url }}
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary btn-save">
+                    <i class="fas fa-check"></i> Save Changes
+                </button>
+                <a href="{% url 'show_profile' profile.pk %}" class="btn btn-cancel">
+                    <i class="fas fa-times"></i> Cancel
+                </a>
+            </div>
+        </form>
+
+        {% if form.errors %}
+        <div class="form-errors">
+            <div class="error-icon">
+                <i class="fas fa-exclamation-circle"></i>
+            </div>
+            <div class="error-content">
+                <h4>Please fix the following errors:</h4>
+                <ul>
+                    {% for field in form %}
+                        {% for error in field.errors %}
+                            <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+                        {% endfor %}
+                    {% endfor %}
+                    {% for error in form.non_field_errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        {% endif %}
     </div>
+</div>
 
-    <input type="submit" name="submit" value="Update">
-</form>
+<style>
+/* Container */
+.container {
+    max-width: 935px;
+    margin: 0 auto;
+    padding: 30px 20px;
+}
 
-<form action="{% url 'show_profile' profile.pk %}" method="GET">
-    <input type="submit" value="Cancel">
-</form>
+/* Edit Profile Card */
+.edit-profile-card {
+    background: white;
+    border-radius: 8px;
+    padding: 30px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border: 1px solid #dbdbdb;
+    max-width: 600px;
+    margin: 0 auto;
+}
 
- {% endblock %}
+.edit-profile-header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #dbdbdb;
+}
+
+.edit-profile-header h1 {
+    font-size: 24px;
+    font-weight: 600;
+    color: #262626;
+    margin: 0 0 5px 0;
+}
+
+.profile-username {
+    font-size: 14px;
+    color: #8e8e8e;
+    margin: 0;
+}
+
+/* Current Profile Preview */
+.current-profile-preview {
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+    padding: 20px;
+    background-color: #fafafa;
+    border-radius: 6px;
+    border: 1px solid #e0e0e0;
+}
+
+.preview-avatar {
+    margin-right: 20px;
+}
+
+.profile-preview-image {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #fff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.profile-preview-placeholder {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: #007bff;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    font-weight: bold;
+    border: 2px solid #fff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.preview-info h3 {
+    margin: 0 0 5px 0;
+    font-size: 18px;
+    color: #262626;
+}
+
+.preview-display-name {
+    margin: 0;
+    color: #8e8e8e;
+    font-size: 14px;
+}
+
+/* Form Styles */
+.edit-profile-form {
+    margin-top: 20px;
+}
+
+.form-section {
+    margin-bottom: 30px;
+}
+
+.form-group {
+    margin-bottom: 25px;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #262626;
+    font-size: 14px;
+}
+
+.form-label i {
+    margin-right: 8px;
+    color: #8e8e8e;
+    width: 20px;
+    text-align: center;
+}
+
+.input-with-description input,
+.input-with-description textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #dbdbdb;
+    border-radius: 4px;
+    font-size: 14px;
+    color: #262626;
+    background-color: #fafafa;
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+}
+
+.input-with-description input:focus,
+.input-with-description textarea:focus {
+    outline: none;
+    border-color: #8e8e8e;
+    background-color: white;
+}
+
+.input-with-description textarea {
+    min-height: 100px;
+    resize: vertical;
+    font-family: inherit;
+}
+
+.form-description {
+    font-size: 12px;
+    color: #8e8e8e;
+    margin: 6px 0 0 0;
+    line-height: 1.4;
+}
+
+/* Form Actions */
+.form-actions {
+    display: flex;
+    gap: 15px;
+    justify-content: flex-end;
+    padding-top: 20px;
+    border-top: 1px solid #dbdbdb;
+}
+
+.btn {
+    padding: 10px 24px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    border: 1px solid transparent;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.btn i {
+    margin-right: 6px;
+}
+
+.btn-primary {
+    background-color: #0095f6;
+    color: white;
+    border: 1px solid #0095f6;
+}
+
+.btn-primary:hover {
+    background-color: #0074cc;
+    border-color: #0074cc;
+    color: white;
+    text-decoration: none;
+}
+
+.btn-cancel {
+    background-color: transparent;
+    color: #262626;
+    border: 1px solid #dbdbdb;
+}
+
+.btn-cancel:hover {
+    background-color: #fafafa;
+    text-decoration: none;
+}
+
+/* Form Errors */
+.form-errors {
+    background-color: #fff5f5;
+    border: 1px solid #fed7d7;
+    border-radius: 6px;
+    padding: 15px;
+    margin-top: 20px;
+    display: flex;
+    align-items: flex-start;
+}
+
+.error-icon {
+    color: #e53e3e;
+    margin-right: 12px;
+    font-size: 18px;
+}
+
+.error-content h4 {
+    margin: 0 0 8px 0;
+    color: #c53030;
+    font-size: 14px;
+}
+
+.error-content ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.error-content li {
+    font-size: 13px;
+    color: #742a2a;
+    margin-bottom: 4px;
+    line-height: 1.4;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        padding: 15px 10px;
+    }
+    
+    .edit-profile-card {
+        padding: 20px;
+    }
+    
+    .current-profile-preview {
+        flex-direction: column;
+        text-align: center;
+        padding: 15px;
+    }
+    
+    .preview-avatar {
+        margin-right: 0;
+        margin-bottom: 15px;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
+    
+    .btn {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .edit-profile-header h1 {
+        font-size: 20px;
+    }
+    
+    .profile-preview-image,
+    .profile-preview-placeholder {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .profile-preview-placeholder {
+        font-size: 24px;
+    }
+}
+</style>
+
+{% endblock %}

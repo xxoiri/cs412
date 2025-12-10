@@ -16,7 +16,7 @@ urlpatterns = [
     path('profile/<int:pk>/followers', ShowFollowersDetailView.as_view(), name="show_followers"),
     path('profile/<int:pk>/following', ShowFollowingDetailView.as_view(), name="show_following"),
     path('profile/feed', PostFeedListView.as_view(), name="show_feed"),
-    path('profile/search', SearchView.as_view(), name="search"),
+    path('profile/search', SearchView.as_view(), name="profile_search"),
     path('login/', auth_views.LoginView.as_view(template_name='mini_insta/login.html'), name='login'),
     path('logout/', auth_views.LogoutView.as_view(template_name='mini_insta/logout.html'), name='logout'),
     path('logout_confirmation/', TemplateView.as_view(template_name='mini_insta/logged_out.html'), name='logout_confirmation'),

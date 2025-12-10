@@ -46,7 +46,7 @@
                      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSIC02bIuhLOYHHA0btsxc4THlcwRQJSwrnMw&s" width="32" height="32">
                  </a>
  
-                 <a href="{% url 'search' %}">
+                 <a href="{% url 'profile_search' %}">
                      <img src="https://cdn-icons-png.flaticon.com/512/54/54481.png" width="32" height="32" alt="Search">
                  </a>
  
@@ -54,9 +54,22 @@
                      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQkoxKFrM214HiJsJ13DqKYQSYIPBuHGqNFjg&s" width="32" height="32">
                  </a>
 
-                 <a href="{% url 'show_profile' user.profile_set.first.pk %}">
-                     <img src="{{ profile.profile_image_url }}" alt="{{ profile.username }}" width="32" height="32" style="border-radius: 50%; object-fit: cover;">
-                 </a>
+                {% with user.profile_set.first as current_user_profile %}
+                    {% if current_user_profile %}
+                        <a href="{% url 'show_profile' current_user_profile.pk %}">
+                            {% if current_user_profile.profile_image_url %}
+                                <img src="{{ current_user_profile.profile_image_url }}" alt="{{ current_user_profile.username }}" width="32" height="32" style="border-radius: 50%; object-fit: cover;">
+                            {% else %}
+                                <img src="https://via.placeholder.com/32" alt="Profile" width="32" height="32" style="border-radius: 50%; object-fit: cover;">
+                            {% endif %}
+                        </a>
+                    {% else %}
+                        <!-- if no profile exists -->
+                        <a href="#">
+                            <img src="https://via.placeholder.com/32" alt="Profile" width="32" height="32" style="border-radius: 50%; object-fit: cover;">
+                        </a>
+                    {% endif %}
+                {% endwith %}     
  
                  {% else %}
                  <a href="{% url 'show_all_profiles' %}" class="footer-link">
